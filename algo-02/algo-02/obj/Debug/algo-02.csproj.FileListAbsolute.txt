@@ -1,0 +1,7 @@
+E:\work\stocks\algo-02\algo-02\bin\Debug\algo-02.exe.config
+E:\work\stocks\algo-02\algo-02\bin\Debug\algo-02.exe
+E:\work\stocks\algo-02\algo-02\bin\Debug\algo-02.pdb
+E:\work\stocks\algo-02\algo-02\obj\Debug\algo-02.csprojAssemblyReference.cache
+E:\work\stocks\algo-02\algo-02\obj\Debug\algo-02.csproj.CoreCompileInputs.cache
+E:\work\stocks\algo-02\algo-02\obj\Debug\algo-02.exe
+E:\work\stocks\algo-02\algo-02\obj\Debug\algo-02.pdb

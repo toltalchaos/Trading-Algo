@@ -1,0 +1,8 @@
+alpha vantage API key
+Z52ESGDDV1GBC6PH
+
+alpaca API
+key
+AK1FV051MI3PDMBLJOCK
+secret key
+9vygmkKxUezT0prWV8tlrGiv7c0uARiKMY0QtHCg
