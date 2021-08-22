@@ -119,7 +119,10 @@ AS
 RETURN
 GO
 
--- trigger to audit logs
+-- trigger to add to audit logs
+--market data trigger
+
+--wallet transaction trigger
 
 
 -- create procs/trigs 
