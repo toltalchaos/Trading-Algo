@@ -28,5 +28,7 @@ namespace algo_02
             Console.ReadLine();
 
         }
+
+
     }
 }

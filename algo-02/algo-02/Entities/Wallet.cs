@@ -10,7 +10,7 @@ namespace algo_02.Entities
     public partial class Wallet
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int WalletNumber { get; set; }
 
         public int? PortfolioNumber { get; set; }

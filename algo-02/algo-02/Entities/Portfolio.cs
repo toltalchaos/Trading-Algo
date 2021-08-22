@@ -16,7 +16,7 @@ namespace algo_02.Entities
         }
 
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int PortfolioNumber { get; set; }
 
         [StringLength(5)]
