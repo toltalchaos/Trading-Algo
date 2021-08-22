@@ -55,7 +55,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Entities\Model1.cs" />
+    <Compile Include="Entities\AlgoDbContext.cs" />
     <Compile Include="Entities\Portfolio.cs" />
     <Compile Include="Entities\Stock_Item.cs" />
     <Compile Include="Entities\Wallet.cs" />
@@ -76,7 +76,10 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="EntityModels\" />
+    <Folder Include="LogicLayer\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
