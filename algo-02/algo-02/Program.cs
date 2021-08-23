@@ -19,13 +19,60 @@ namespace algo_02
     {
         static void Main(string[] args)
         {
-            MarketInterface API = new MarketInterface();
+            // run DB stored proc to nuke?
+          
 
-            string testing_ = API.TESTGET().Result;
-            Console.WriteLine(testing_);
+            //prompt for input on amount to trade with
+            int startupAmount = AlgoStartupAmount();
 
-            Console.WriteLine("press a key to exit");
+            //prompt for symbols to watch
+            //search for symbols - create object refrences
+            //confirm Y/N loop
+
+            //log data to db
+
+            //create stock item objects for each symbol
+
+            //prompt to begin algo trading
+
+                //log data movement
+                //analyze stock history and current position -> decision
+                //sleep -10min
+
+            //algo trade monitoring and logic - allow for interrupt between system threads
+
+            //exit trading
+
+            //full audit report to CSV? - DB object 
+
+            //display gains or losses (chart?)
+
+            //prompt for continue with data - start over - print and exit
+
+        }
+
+        static int AlgoStartupAmount()
+        {
+            int startupAmount = 0;
+            Console.WriteLine("How much money do I get to play with? ");
+            Console.WriteLine("(enter amount and press enter");
+            try
+            {
+                startupAmount = int.Parse(Console.ReadLine());
+                if (startupAmount <= 0)
+                {
+                    throw new Exception("number too low");
+                }
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"{e.Message} Please Enter a whole number and press enter)");
+                AlgoStartupAmount();
+
+            }
             Console.ReadLine();
+            return startupAmount;
 
         }
 

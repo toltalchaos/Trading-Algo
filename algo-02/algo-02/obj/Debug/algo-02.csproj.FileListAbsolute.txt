@@ -5,3 +5,15 @@ E:\work\stocks\algo-02\algo-02\obj\Debug\algo-02.csprojAssemblyReference.cache
 E:\work\stocks\algo-02\algo-02\obj\Debug\algo-02.csproj.CoreCompileInputs.cache
 E:\work\stocks\algo-02\algo-02\obj\Debug\algo-02.exe
 E:\work\stocks\algo-02\algo-02\obj\Debug\algo-02.pdb
+E:\work\Trading-Algo\algo-02\algo-02\bin\Debug\algo-02.exe.config
+E:\work\Trading-Algo\algo-02\algo-02\bin\Debug\algo-02.exe
+E:\work\Trading-Algo\algo-02\algo-02\bin\Debug\algo-02.pdb
+E:\work\Trading-Algo\algo-02\algo-02\bin\Debug\EntityFramework.dll
+E:\work\Trading-Algo\algo-02\algo-02\bin\Debug\EntityFramework.SqlServer.dll
+E:\work\Trading-Algo\algo-02\algo-02\bin\Debug\EntityFramework.xml
+E:\work\Trading-Algo\algo-02\algo-02\bin\Debug\EntityFramework.SqlServer.xml
+E:\work\Trading-Algo\algo-02\algo-02\obj\Debug\algo-02.csprojAssemblyReference.cache
+E:\work\Trading-Algo\algo-02\algo-02\obj\Debug\algo-02.csproj.CoreCompileInputs.cache
+E:\work\Trading-Algo\algo-02\algo-02\obj\Debug\algo-02.csproj.CopyComplete
+E:\work\Trading-Algo\algo-02\algo-02\obj\Debug\algo-02.exe
+E:\work\Trading-Algo\algo-02\algo-02\obj\Debug\algo-02.pdb
