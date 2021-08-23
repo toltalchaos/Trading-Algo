@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data.SqlClient;
+using algo_02.LogicLayer;
 namespace algo_02
 {
     class Program
@@ -20,7 +21,8 @@ namespace algo_02
         static void Main(string[] args)
         {
             // run DB stored proc to nuke?
-          
+            Modelinterface models = new Modelinterface();
+
 
             //prompt for input on amount to trade with
             int startupAmount = AlgoStartupAmount();
@@ -82,8 +84,31 @@ namespace algo_02
             //create a List<T> where T is a list of Stock Object Models 
             //loop through recieving stock symbols (validate existance) -> creating List<string>
             //push symbol list to logic layer to create the models and interfaceDB
-        }
+            bool exitBool = false;
+            do
+            {
+                //work- here
 
+                Console.WriteLine("are you finished adding stocks to watch? Y/N");
+                try
+                {
+                    ConsoleKeyInfo answer = Console.ReadKey();
+                    if (answer.KeyChar == 'y')
+                    {
+                        exitBool = true;
+                    }
+                    else
+                    {
+                        throw new Exception("please press the \'Y\' key or the \'N\' key");
+                    }
+                }
+                catch (Exception e)
+                {
+
+                    throw;
+                }
+            } while (!exitBool);
+        }
 
     }
 }
