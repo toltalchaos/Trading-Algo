@@ -12,6 +12,7 @@ namespace algo_02.Entities
         public Stock_Item()
         {
             Portfolios = new HashSet<Portfolio>();
+            WALLET_HISTORY = new HashSet<WALLET_HISTORY>();
         }
 
         [Key]
@@ -32,5 +33,8 @@ namespace algo_02.Entities
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Portfolio> Portfolios { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<WALLET_HISTORY> WALLET_HISTORY { get; set; }
     }
 }

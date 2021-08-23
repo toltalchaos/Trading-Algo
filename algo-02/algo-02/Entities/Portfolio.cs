@@ -13,16 +13,16 @@ namespace algo_02.Entities
         public Portfolio()
         {
             Wallets = new HashSet<Wallet>();
+            WALLET_HISTORY = new HashSet<WALLET_HISTORY>();
         }
 
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int PortfolioNumber { get; set; }
 
         [StringLength(5)]
         public string Symbol { get; set; }
 
-        public decimal? PurchasePrice { get; set; }
+        public decimal? SalePrice { get; set; }
 
         public int? AmountOwned { get; set; }
 
@@ -30,5 +30,8 @@ namespace algo_02.Entities
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Wallet> Wallets { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<WALLET_HISTORY> WALLET_HISTORY { get; set; }
     }
 }

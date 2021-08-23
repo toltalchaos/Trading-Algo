@@ -6,19 +6,25 @@ namespace algo_02.Entities
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    [Table("Wallet")]
-    public partial class Wallet
+    public partial class WALLET_HISTORY
     {
         [Key]
-        public int WalletNumber { get; set; }
+        public int transactionNumber { get; set; }
 
         public int? PortfolioNumber { get; set; }
 
-        public decimal? CurrentBalance { get; set; }
+        public decimal? Balance { get; set; }
+
+        [StringLength(5)]
+        public string Symbol { get; set; }
+
+        public decimal? Amount { get; set; }
 
         [StringLength(4)]
-        public string LastTransactionDirection { get; set; }
+        public string Direction { get; set; }
 
         public virtual Portfolio Portfolio { get; set; }
+
+        public virtual Stock_Item Stock_Item { get; set; }
     }
 }
