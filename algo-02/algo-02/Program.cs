@@ -28,6 +28,7 @@ namespace algo_02
             //prompt for symbols to watch
             //search for symbols - create object refrences
             //confirm Y/N loop
+            LoadSymbols();
 
             //log data to db
 
@@ -39,7 +40,7 @@ namespace algo_02
                 //analyze stock history and current position -> decision
                 //sleep -10min
 
-            //algo trade monitoring and logic - allow for interrupt between system threads
+            //algo trade monitoring and logic - allow for interrupt between system threads 
 
             //exit trading
 
@@ -74,6 +75,13 @@ namespace algo_02
             Console.ReadLine();
             return startupAmount;
 
+        }
+
+        static void LoadSymbols()
+        {
+            //create a List<T> where T is a list of Stock Object Models 
+            //loop through recieving stock symbols (validate existance) -> creating List<string>
+            //push symbol list to logic layer to create the models and interfaceDB
         }
 
 
