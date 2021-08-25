@@ -30,6 +30,14 @@ namespace algo_02
 
         }
 
+        public string QueryMarket_Symbol(string symbolIn)
+        {
+            //incoming - string to check if market has matching symbol
+            //outgoing - null string/confirmed symbol
+
+
+
+        }
 
 
     }

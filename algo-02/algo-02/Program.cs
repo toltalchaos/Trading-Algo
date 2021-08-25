@@ -14,6 +14,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.SqlClient;
 using algo_02.LogicLayer;
+using System.Text.RegularExpressions;
+
 namespace algo_02
 {
     class Program
@@ -58,7 +60,7 @@ namespace algo_02
         {
             int startupAmount = 0;
             Console.WriteLine("How much money do I get to play with? ");
-            Console.WriteLine("(enter amount and press enter");
+            Console.WriteLine("(enter amount and press enter)");
             try
             {
                 startupAmount = int.Parse(Console.ReadLine());
@@ -70,7 +72,7 @@ namespace algo_02
             }
             catch (Exception e)
             {
-                Console.WriteLine($"{e.Message} Please Enter a whole number and press enter)");
+                Console.WriteLine($"{e.Message} Please Enter a whole number and press enter.");
                 AlgoStartupAmount();
 
             }
@@ -79,15 +81,35 @@ namespace algo_02
 
         }
 
-        static void LoadSymbols()
+        static List<string> LoadSymbols()
         {
             //create a List<T> where T is a list of Stock Object Models 
             //loop through recieving stock symbols (validate existance) -> creating List<string>
             //push symbol list to logic layer to create the models and interfaceDB
             bool exitBool = false;
+            MarketInterface marketInterface = new MarketInterface();
+            List<string> symbolList = null;
             do
             {
                 //work- here
+
+
+                //enter prompt
+                Console.WriteLine("Enter the Stock symbol you would like to track and trade. then hit enter");
+                try
+                {
+                    string symbolInput = Console.ReadLine().Trim().ToUpper();
+                    string symbolResponse = marketInterface.QueryMarket_Symbol(symbolInput);
+                    
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
+                //check markets
+                //logic to confirm
+
 
                 Console.WriteLine("are you finished adding stocks to watch? Y/N");
                 try
@@ -104,10 +126,13 @@ namespace algo_02
                 }
                 catch (Exception e)
                 {
-
-                    throw;
+                    Console.WriteLine($"{e.Message}");
+                    
                 }
             } while (!exitBool);
+
+            return symbolList;
+
         }
 
     }
