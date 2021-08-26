@@ -24,6 +24,8 @@ namespace algo_02
         {
             // run DB stored proc to nuke?
             Modelinterface models = new Modelinterface();
+            MarketInterface marketInterface = new MarketInterface();
+            models.NUKEDATABASE();
 
 
             //prompt for input on amount to trade with
@@ -32,9 +34,13 @@ namespace algo_02
             //prompt for symbols to watch
             //search for symbols - create object refrences
             //confirm Y/N loop
-            LoadSymbols();
+            List<string> symbols = LoadSymbols();
 
             //log data to db
+            foreach (var symbol in symbols)
+            {
+
+            }
 
             //create stock item objects for each symbol
 
@@ -76,7 +82,6 @@ namespace algo_02
                 AlgoStartupAmount();
 
             }
-            Console.ReadLine();
             return startupAmount;
 
         }
@@ -88,6 +93,8 @@ namespace algo_02
             //push symbol list to logic layer to create the models and interfaceDB
             bool exitBool = false;
             MarketInterface marketInterface = new MarketInterface();
+
+
             List<string> symbolList = null;
             do
             {
@@ -98,18 +105,26 @@ namespace algo_02
                 Console.WriteLine("Enter the Stock symbol you would like to track and trade. then hit enter");
                 try
                 {
-                    string symbolInput = Console.ReadLine().Trim().ToUpper();
-                    string symbolResponse = marketInterface.QueryMarket_Symbol(symbolInput);
+                    string symbolInput = Console.ReadLine().Trim(' ').ToUpper();
+                    string symbolResponse = marketInterface.History_QueryMarket_Symbol(symbolInput);
+                    //if query string returns null - throw new
+                    if (symbolResponse.Contains("Invalid API call."))
+                    {
+                        throw new Exception($"The symbol {symbolInput} was not found, hit \"Y\" to try another");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"The symbol{symbolInput} was found");
+                        Console.WriteLine(symbolResponse);
+                    }
+
+
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
                     
                 }
-                catch (Exception)
-                {
-
-                    throw;
-                }
-                //check markets
-                //logic to confirm
-
 
                 Console.WriteLine("are you finished adding stocks to watch? Y/N");
                 try
@@ -121,7 +136,7 @@ namespace algo_02
                     }
                     else
                     {
-                        throw new Exception("please press the \'Y\' key or the \'N\' key");
+                        throw new Exception("\r\nplease press the \'Y\' key or the \'N\' key");
                     }
                 }
                 catch (Exception e)
