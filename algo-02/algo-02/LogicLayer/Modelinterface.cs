@@ -11,33 +11,45 @@ namespace algo_02.LogicLayer
     {
         public void NUKEDATABASE()
         {
-            using (var dbcontext = new AlgoDataBase())
+            using (var context = new AlgoDataBase())
             {
                 //select table by table in order of dependant to non dependant and nuke all data
-                SYMBOL_HISTORY symbHist = null;
-                WALLET_HISTORY walletHist = null;
-                Wallet wallet = null;
-                Portfolio portfolio = null;
-                Stock_Item stockItem = null;
-                Stock_Item collection = (from x in dbcontext.Stock_Item
-                                           select x.Symbol).to;
-                Console.WriteLine(collection);
+                List<SYMBOL_HISTORY> symbolHistoryCollection = (from x in context.SYMBOL_HISTORY
+                                                                select x).ToList();
+                List<WALLET_HISTORY> walletHistoryCollection = (from x in context.WALLET_HISTORY
+                                                                select x).ToList();
+                List<Wallet> walletCollection = (from x in context.Wallets
+                                                 select x).ToList();
+                List<Portfolio> portfolioCollection = (from x in context.Portfolios
+                                                       select x).ToList();
+                List<Stock_Item> stockCollection = (from x in context.Stock_Item
+                                           select x).ToList();
+                
+                foreach (var item in symbolHistoryCollection)
+                {
+                    context.SYMBOL_HISTORY.Remove(item);
+                }
+                foreach (var item in walletHistoryCollection)
+                {
+                    context.WALLET_HISTORY.Remove(item);
+                }
+                foreach (var item in walletCollection)
+                {
+                    context.Wallets.Remove(item);
+                }
+                foreach (var item in portfolioCollection)
+                {
+                    context.Portfolios.Remove(item);
+                }
+                foreach (var item in stockCollection)
+                {
+                    context.Stock_Item.Remove(item);
+                }
+                context.SaveChanges();
                 
             }
         }
-        private void NUKEDBHELPER()
-        {
-            using(var dbcontext = new AlgoDataBase())
-            {
-                List<string> collection = (from x in dbcontext.Stock_Item
-                                           select x.Symbol).ToList();
-                foreach (var item in collection)
-                {
-
-                }
-
-            }
-        }
+        
         public void AddSymbolToWatchList(string symbol)
         {
 
