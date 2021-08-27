@@ -11,7 +11,7 @@ namespace algo_02.LogicLayer
     {
         public void NUKEDATABASE()
         {
-            using (var context = new AlgoDataBase())
+            using (var context = new DatabaseContext())
             {
                 //select table by table in order of dependant to non dependant and nuke all data
                 List<SYMBOL_HISTORY> symbolHistoryCollection = (from x in context.SYMBOL_HISTORY
@@ -24,6 +24,8 @@ namespace algo_02.LogicLayer
                                                        select x).ToList();
                 List<Stock_Item> stockCollection = (from x in context.Stock_Item
                                            select x).ToList();
+                List<WatchList> watchListCollection = (from x in context.WatchLists
+                                                       select x).ToList();
                 
                 foreach (var item in symbolHistoryCollection)
                 {
@@ -45,6 +47,10 @@ namespace algo_02.LogicLayer
                 {
                     context.Stock_Item.Remove(item);
                 }
+                foreach (var item in watchListCollection)
+                {
+                    context.WatchLists.Remove(item);
+                }
                 context.SaveChanges();
                 
             }
@@ -52,7 +58,21 @@ namespace algo_02.LogicLayer
         
         public void AddSymbolToWatchList(string symbol)
         {
+            //crack open DB context
+            using (var context = new DatabaseContext())
+            {
+                try
+                {
 
+                    Console.WriteLine("\t\n" + symbol + " added to database");
+                }
+                catch (Exception e)
+                {
+
+                    Console.WriteLine(e.Message);
+                }
+            }
+            
         }
     }
 }

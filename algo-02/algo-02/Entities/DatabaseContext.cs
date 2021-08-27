@@ -5,10 +5,10 @@ using System.Linq;
 
 namespace algo_02.Entities
 {
-    public partial class AlgoDataBase : DbContext
+    public partial class DatabaseContext : DbContext
     {
-        public AlgoDataBase()
-            : base("name=AlgoDataBaseContext")
+        public DatabaseContext()
+            : base("name=DatabaseContext")
         {
         }
 
@@ -17,6 +17,7 @@ namespace algo_02.Entities
         public virtual DbSet<SYMBOL_HISTORY> SYMBOL_HISTORY { get; set; }
         public virtual DbSet<Wallet> Wallets { get; set; }
         public virtual DbSet<WALLET_HISTORY> WALLET_HISTORY { get; set; }
+        public virtual DbSet<WatchList> WatchLists { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -90,6 +91,10 @@ namespace algo_02.Entities
 
             modelBuilder.Entity<WALLET_HISTORY>()
                 .Property(e => e.Direction)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<WatchList>()
+                .Property(e => e.symbol)
                 .IsUnicode(false);
         }
     }

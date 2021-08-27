@@ -23,9 +23,9 @@ namespace algo_02
         static void Main(string[] args)
         {
             // run DB stored proc to nuke?
-            Modelinterface models = new Modelinterface();
+            Modelinterface modelInterface = new Modelinterface();
             MarketInterface marketInterface = new MarketInterface();
-            models.NUKEDATABASE();
+            modelInterface.NUKEDATABASE();
 
 
             //prompt for input on amount to trade with
@@ -34,13 +34,17 @@ namespace algo_02
             //prompt for symbols to watch
             //search for symbols - create object refrences
             //confirm Y/N loop
-            List<string> symbols = LoadSymbols();
 
+            List<string> symbolhistory = new List<string>();
+            List<string> symbols = new List<string>();
+            LoadSymbols(out symbolhistory, out symbols);
             //log data to db
             foreach (var symbol in symbols)
             {
-
+                modelInterface.AddSymbolToWatchList(symbol);
+                
             }
+
 
             //create stock item objects for each symbol
 
@@ -86,16 +90,17 @@ namespace algo_02
 
         }
 
-        static List<string> LoadSymbols()
+        static void LoadSymbols(out List<string> symbolhistory, out List<string> symbols)
         {
             //create a List<T> where T is a list of Stock Object Models 
             //loop through recieving stock symbols (validate existance) -> creating List<string>
             //push symbol list to logic layer to create the models and interfaceDB
             bool exitBool = false;
             MarketInterface marketInterface = new MarketInterface();
+            List<string> historyData = new List<string>();
+            List<string> symbolList = new List<string>();
 
-
-            List<string> symbolList = null;
+            
             do
             {
                 //work- here
@@ -116,6 +121,8 @@ namespace algo_02
                     {
                         Console.WriteLine($"The symbol{symbolInput} was found");
                         Console.WriteLine(symbolResponse);
+                        historyData.Add(symbolResponse);
+                        symbolList.Add(symbolInput);
                     }
 
 
@@ -146,7 +153,8 @@ namespace algo_02
                 }
             } while (!exitBool);
 
-            return symbolList;
+            symbolhistory = historyData;
+            symbols = symbolList;
 
         }
 

@@ -55,12 +55,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Entities\AlgoDataBase.cs" />
+    <Compile Include="Entities\DatabaseContext.cs" />
     <Compile Include="Entities\Portfolio.cs" />
     <Compile Include="Entities\Stock_Item.cs" />
     <Compile Include="Entities\SYMBOL_HISTORY.cs" />
     <Compile Include="Entities\Wallet.cs" />
     <Compile Include="Entities\WALLET_HISTORY.cs" />
+    <Compile Include="Entities\WatchList.cs" />
     <Compile Include="LogicLayer\MarketInterface.cs" />
     <Compile Include="LogicLayer\Modelinterface.cs" />
     <Compile Include="Program.cs" />
