@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace algo_02.LogicLayer
 {
@@ -86,6 +87,34 @@ namespace algo_02.LogicLayer
         {
             //incoming list of string formatted json data for the symbol history
             //deserialize json data to usable data -> enter each set to DB new row per set
+            foreach (var item in symbolHistory)
+            {
+                try
+                {
+                    //var symbolHistObj = JsonConvert.DeserializeObject<dynamic>(item);
+                    //string testvalue = symbolHistObj.ChildrenTokens[0].Value.ChildrenTokens[1].Value.ToString();
+                    //Console.WriteLine(testvalue);
+                    //Console.ReadKey();
+                    //https://www.newtonsoft.com/json/help/html/QueryingLINQtoJSON.htm#Index
+                    JObject symbolObject = JObject.Parse(item);
+
+                    JArray timeSeries = (JArray)symbolObject["Time Series (5min)"];
+                    JArray metaData = (JArray)symbolObject["Meta Data"];
+
+                    Console.ReadKey();
+                    
+
+
+                }
+                catch (Exception e)
+                {
+
+                    Console.WriteLine("there was a problem converting Json data : " + e.Message);
+                    Console.ReadKey();
+                }
+               
+
+            }
             
         }
     }
