@@ -30,6 +30,10 @@ IF EXISTS(SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Stock_Item
 DROP TABLE Stock_Item
 GO
 
+IF EXISTS(SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'WatchList')
+DROP TABLE WatchList
+GO
+
 -- create tables 
 
 CREATE TABLE Stock_Item
@@ -87,6 +91,11 @@ CREATE TABLE WALLET_HISTORY
     Symbol VARCHAR(5) CONSTRAINT FK_transact_Symbol FOREIGN KEY(Symbol) REFERENCES Stock_Item(Symbol),
     Amount DECIMAL(10,4) CONSTRAINT CK_trans_zero CHECK(Amount > 0),
     Direction VARCHAR(4) CONSTRAINT CK_transact_BuySell CHECK(Direction IN ('BUY', 'SELL'))
+)
+GO
+CREATE Table WatchList
+(
+    symbol VARCHAR(5) PRIMARY KEY
 )
 GO
 

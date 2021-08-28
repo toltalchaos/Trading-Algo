@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace algo_02.LogicLayer
 {
     class Modelinterface
@@ -56,15 +57,22 @@ namespace algo_02.LogicLayer
             }
         }
         
-        public void AddSymbolToWatchList(string symbol)
+        public void AddSymbolToWatchList(List<string> symbols)
         {
             //crack open DB context
             using (var context = new DatabaseContext())
             {
                 try
                 {
-
-                    Console.WriteLine("\t\n" + symbol + " added to database");
+                    foreach (var item in symbols)
+                    {
+                        WatchList symbolToAdd = new WatchList();
+                        symbolToAdd.symbol = item;
+                        context.WatchLists.Add(symbolToAdd);
+                        Console.WriteLine("\t\n" + item + " added to database");
+                    }
+                    context.SaveChanges();
+                    Console.WriteLine("Watch list saved");
                 }
                 catch (Exception e)
                 {
@@ -72,6 +80,12 @@ namespace algo_02.LogicLayer
                     Console.WriteLine(e.Message);
                 }
             }
+            
+        }
+        public void AddSymbolHistory(List<string> symbolHistory)
+        {
+            //incoming list of string formatted json data for the symbol history
+            //deserialize json data to usable data -> enter each set to DB new row per set
             
         }
     }

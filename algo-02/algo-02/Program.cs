@@ -39,12 +39,9 @@ namespace algo_02
             List<string> symbols = new List<string>();
             LoadSymbols(out symbolhistory, out symbols);
             //log data to db
-            foreach (var symbol in symbols)
-            {
-                modelInterface.AddSymbolToWatchList(symbol);
-                
-            }
-
+            
+            modelInterface.AddSymbolToWatchList(symbols);
+            modelInterface.AddSymbolHistory(symbolhistory);
 
             //create stock item objects for each symbol
 
