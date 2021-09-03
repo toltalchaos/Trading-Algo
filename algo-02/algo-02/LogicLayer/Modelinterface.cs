@@ -92,30 +92,43 @@ namespace algo_02.LogicLayer
                 try
                 {
                     //var symbolHistObj = JsonConvert.DeserializeObject<dynamic>(item);
-                    //string testvalue = symbolHistObj.ChildrenTokens[0].Value.ChildrenTokens[1].Value.ToString();
-                    //Console.WriteLine(testvalue);
-                    //Console.ReadKey();
+                   
                     //https://www.newtonsoft.com/json/help/html/QueryingLINQtoJSON.htm#Index
-                    JObject symbolObject = JObject.Parse(item);
+                    JToken symbolObject = JToken.Parse(item);
+                    JToken metaData = symbolObject.First;
+                    JToken timeSeries = JToken.Parse(symbolObject["Time Series (5min)"].ToString());
 
-                    JArray timeSeries = (JArray)symbolObject["Time Series (5min)"];
-                    JArray metaData = (JArray)symbolObject["Meta Data"];
+                    List<JToken> timeSeriesArray = timeSeries.Children().ToList();
+                    //string test = timeSeriesArray[0].ToString();
+                    //Console.WriteLine(test);
+
+                    foreach (var timeStamp in timeSeriesArray)
+                    {
+                        //create object to submit to DB here
+                        Stock_Item newEntry = new Stock_Item();
+                        //metaData.First.First.Next.ToString().Split('\"')[3]); --------->  "2. high":"SYMB" [3] for symbol
+
+
+                    }
 
                     Console.ReadKey();
-                    
-
-
                 }
                 catch (Exception e)
                 {
 
-                    Console.WriteLine("there was a problem converting Json data : " + e.Message);
+                    Console.WriteLine("there was a problem converting Json data: " + e.Message);
                     Console.ReadKey();
                 }
                
 
             }
             
+        }
+
+        private string RemoveJsonStringBraces(JToken incomingToken)
+        {
+            string cleanupString = incomingToken.ToString().TrimStart('{').TrimEnd('}');
+            return cleanupString;
         }
     }
 }
