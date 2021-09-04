@@ -94,6 +94,7 @@
     <Compile Include="Entities\WALLET_HISTORY.cs" />
     <Compile Include="Entities\WatchList.cs" />
     <Compile Include="EntityModels\SymbolObject.cs" />
+    <Compile Include="LogicLayer\DecisionMaker.cs" />
     <Compile Include="LogicLayer\MarketInterface.cs" />
     <Compile Include="LogicLayer\Modelinterface.cs" />
     <Compile Include="Program.cs" />

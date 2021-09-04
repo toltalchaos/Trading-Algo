@@ -50,7 +50,7 @@ namespace algo_02
             UpdateSymbols(symbols, out symbolhistory);
             modelInterface.UpdateTickers(symbolhistory);
                 //analyze stock history and current position -> decision
-                //sleep -10min
+                //sleep -10min - may need to review updating tickers for extended times
 
             //algo trade monitoring and logic - allow for interrupt between system threads 
 
