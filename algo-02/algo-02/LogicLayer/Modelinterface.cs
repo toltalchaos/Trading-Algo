@@ -210,36 +210,45 @@ namespace algo_02.LogicLayer
                     //context.SYMBOL_HISTORY.Add(updatehistory);
                     //change old data
                     #endregion
-                    foreach (var datapoint in symbolData)
+                    foreach (var dataset in symbolData)
                     {
                         try
                         {
 
 
-                            JToken symbolObject = JToken.Parse(datapoint);
+                            JToken symbolObject = JToken.Parse(dataset);
+                            //looking for matching symbols
                             if (symbolObject.First.First["2. Symbol"].ToString() == symbol)
                             {
                                 //grabbed correct matching symbol
                                 JToken firstTimeData = symbolObject.Last.First.First;
-                                
+
                                 Stock_Item itemToChange = (from x in context.Stock_Item where x.Symbol == symbol select x).FirstOrDefault();
                                 itemToChange.Open = decimal.Parse(firstTimeData.First["1. open"].ToString());
                                 itemToChange.High = decimal.Parse(firstTimeData.First["2. high"].ToString());
                                 itemToChange.Low = decimal.Parse(firstTimeData.First["3. low"].ToString());
                                 itemToChange.Close = decimal.Parse(firstTimeData.First["4. close"].ToString());
                                 itemToChange.Volume = int.Parse(firstTimeData.First["5. volume"].ToString());
-                                itemToChange.DataTime = DateTime.Parse(firstTimeData.ToString().Split('"')[1].Trim('"')).AddMinutes(5) ;
+                                itemToChange.DataTime = DateTime.Parse(firstTimeData.ToString().Split('"')[1].Trim('"')).AddMinutes(5);
                                 context.Entry(itemToChange).State = System.Data.Entity.EntityState.Modified;
 
                                 //additional additions to timedata here - create list from timedata - select and save non existing times
                                 // add times to history data under this symbol
-                                foreach (var timedata in datapoint)
+                                List<DateTime> existingtimepoints = (from x in context.SYMBOL_HISTORY where x.Symbol == symbol select x.DataTime).ToList();
+                                List<JToken> incomingtimepoints = symbolObject.Last.First.Children().ToList();
+                                List<JToken> outgoingTimePoints = incomingtimepoints;
+                                //remove all existing time points for this symbol
+                                foreach (var incomingTimePoint in incomingtimepoints)
                                 {
-                                    List<DateTime> existingtimepoints = (from x in context.SYMBOL_HISTORY where x.Symbol == symbol select x.DataTime).ToList();
-                                    List<JToken> incomingtimepoints = symbolObject.Children().ToList();
-
+                                    DateTime incomingTime = DateTime.Parse(incomingTimePoint.ToString().Split('\"')[1]);
+                                    if (existingtimepoints.Contains(incomingTime))
+                                    {
+                                        outgoingTimePoints.Remove(incomingTimePoint);
+                                        Console.WriteLine("this time signature for this symbol already exists");
+                                    }
                                 }
                             }
+                            
                         }
                         catch (Exception e)
                         {
