@@ -170,6 +170,7 @@ namespace algo_02
                         string symbolResponse = marketInterface.History_QueryMarket_Symbol(symbol);
                         historyData.Add(symbolResponse);
                     }
+                    exitbool = true;
                 }
                 catch (Exception e)
                 {

@@ -129,15 +129,12 @@ namespace algo_02.LogicLayer
                     JToken timeSeries = JToken.Parse(symbolObject["Time Series (5min)"].ToString());
 
                     List<JToken> timeSeriesArray = timeSeries.Children().ToList();
-                    string test = timeSeriesArray[0].ToString();
-                    Console.WriteLine(test);
 
                     foreach (var timeStamp in timeSeriesArray)
                     {
                         //create object to submit to DB here
                         SymbolObject newEntry = new SymbolObject();
                         
-                        Console.WriteLine();
                         newEntry.Symbol = metaData.First["2. Symbol"].ToString();
                         newEntry.Open = decimal.Parse(timeStamp.First["1. open"].ToString());
                         newEntry.High = decimal.Parse(timeStamp.First["2. high"].ToString());
@@ -147,7 +144,7 @@ namespace algo_02.LogicLayer
                         newEntry.DataTime = DateTime.Parse(timeStamp.ToString().Split('"')[1].Trim('"'));
 
                         // add the first instance to stock item to create the current data for the item
-                        if (!(timeStamp == timeSeriesArray[0]))
+                        if (newEntry.DataTime != DateTime.Parse(timeSeriesArray[0].ToString().Split('"')[1].Trim('"')))
                         {
                             SYMBOL_HISTORY historydatapoint = new SYMBOL_HISTORY();
                             historydatapoint.Symbol = newEntry.Symbol;
@@ -176,7 +173,6 @@ namespace algo_02.LogicLayer
 
                     }
 
-                    Console.ReadKey();
                 }
                 catch (Exception e)
                 {
@@ -198,21 +194,22 @@ namespace algo_02.LogicLayer
 
                 foreach (var symbol in symbols)
                 {
+                    #region database trigger handles - code left
                     //move current data from the item to the stock item to the item history
                     //create new history entry
-                    SYMBOL_HISTORY updatehistory = new SYMBOL_HISTORY();
-                    updatehistory.Symbol = symbol;
-                    updatehistory.Open = (from x in context.Stock_Item where x.Symbol == symbol select x.Open).FirstOrDefault();
-                    updatehistory.High = (from x in context.Stock_Item where x.Symbol == symbol select x.High).FirstOrDefault();
-                    updatehistory.Low = (from x in context.Stock_Item where x.Symbol == symbol select x.Low).FirstOrDefault();
-                    updatehistory.Close = (from x in context.Stock_Item where x.Symbol == symbol select x.Close).FirstOrDefault();
-                    updatehistory.Volume = (from x in context.Stock_Item where x.Symbol == symbol select x.Volume).FirstOrDefault();
-                    updatehistory.DataTime = (from x in context.Stock_Item where x.Symbol == symbol select x.DataTime).FirstOrDefault();
-                    //fill with data selected from symbolitem table
-                    //commit
-                    context.SYMBOL_HISTORY.Add(updatehistory);
+                    //SYMBOL_HISTORY updatehistory = new SYMBOL_HISTORY();
+                    //updatehistory.Symbol = symbol;
+                    //updatehistory.Open = (from x in context.Stock_Item where x.Symbol == symbol select x.Open).FirstOrDefault();
+                    //updatehistory.High = (from x in context.Stock_Item where x.Symbol == symbol select x.High).FirstOrDefault();
+                    //updatehistory.Low = (from x in context.Stock_Item where x.Symbol == symbol select x.Low).FirstOrDefault();
+                    //updatehistory.Close = (from x in context.Stock_Item where x.Symbol == symbol select x.Close).FirstOrDefault();
+                    //updatehistory.Volume = (from x in context.Stock_Item where x.Symbol == symbol select x.Volume).FirstOrDefault();
+                    //updatehistory.DataTime = (from x in context.Stock_Item where x.Symbol == symbol select x.DataTime).FirstOrDefault();
+                    ////fill with data selected from symbolitem table
+
+                    //context.SYMBOL_HISTORY.Add(updatehistory);
                     //change old data
-                    //  search json data for symbol match
+                    #endregion
                     foreach (var datapoint in symbolData)
                     {
                         try
@@ -221,7 +218,16 @@ namespace algo_02.LogicLayer
                             if (symbolObject.First.First["2. Symbol"].ToString() == symbol)
                             {
                                 //grabbed correct matching symbol
-
+                                JToken timeData = symbolObject.Last.First.First;
+                                
+                                Stock_Item itemToChange = (from x in context.Stock_Item where x.Symbol == symbol select x).FirstOrDefault();
+                                itemToChange.Open = decimal.Parse(timeData.First["1. open"].ToString());
+                                itemToChange.High = decimal.Parse(timeData.First["2. high"].ToString());
+                                itemToChange.Low = decimal.Parse(timeData.First["3. low"].ToString());
+                                itemToChange.Close = decimal.Parse(timeData.First["4. close"].ToString());
+                                itemToChange.Volume = int.Parse(timeData.First["5. volume"].ToString());
+                                itemToChange.DataTime = DateTime.Parse(timeData.ToString().Split('"')[1].Trim('"')).AddMinutes(5) ;
+                                context.Entry(itemToChange).State = System.Data.Entity.EntityState.Modified;
                             }
                         }
                         catch (Exception e)
@@ -232,7 +238,7 @@ namespace algo_02.LogicLayer
                         }
                     }
 
-                    //get the first timeseries data -> into stock item 
+                    context.SaveChanges();
 
                 }
             }
