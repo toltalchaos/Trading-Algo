@@ -29,7 +29,7 @@ namespace algo_02.Entities
 
         public int? Volume { get; set; }
 
-        public DateTime? DataTime { get; set; }
+        public DateTime DataTime { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Portfolio> Portfolios { get; set; }

@@ -24,12 +24,13 @@ namespace algo_02
         {
             // run DB stored proc to nuke?
             Modelinterface modelInterface = new Modelinterface();
-            MarketInterface marketInterface = new MarketInterface();
             modelInterface.NUKEDATABASE();
 
 
             //prompt for input on amount to trade with
             int startupAmount = AlgoStartupAmount();
+            int walletNumber = modelInterface.CreateNewWallet(startupAmount);
+            
 
             //prompt for symbols to watch
             //search for symbols - create object refrences
@@ -45,7 +46,9 @@ namespace algo_02
 
             //prompt to begin algo trading
 
-                //log data movement
+            //log data movement
+            UpdateSymbols(symbols, out symbolhistory);
+            modelInterface.UpdateTickers(symbolhistory);
                 //analyze stock history and current position -> decision
                 //sleep -10min
 
@@ -152,6 +155,33 @@ namespace algo_02
             symbols = symbolList;
 
         }
+
+        static void UpdateSymbols(List<string> symbolList ,out List<string> symbolhistory)
+        {
+            bool exitbool = false;
+            MarketInterface marketInterface = new MarketInterface();
+            List<string> historyData = new List<string>();
+            do
+            {
+                try
+                {
+                    foreach (var symbol in symbolList)
+                    {
+                        string symbolResponse = marketInterface.History_QueryMarket_Symbol(symbol);
+                        historyData.Add(symbolResponse);
+                    }
+                }
+                catch (Exception e)
+                {
+
+                    Console.WriteLine("there was an error updating ---> " + e.Message);
+                }
+                //may need thread sleep
+            } while (!exitbool);
+
+            symbolhistory = historyData;
+        }
+        
 
     }
 }

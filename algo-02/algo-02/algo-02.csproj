@@ -93,6 +93,7 @@
     <Compile Include="Entities\Wallet.cs" />
     <Compile Include="Entities\WALLET_HISTORY.cs" />
     <Compile Include="Entities\WatchList.cs" />
+    <Compile Include="EntityModels\SymbolObject.cs" />
     <Compile Include="LogicLayer\MarketInterface.cs" />
     <Compile Include="LogicLayer\Modelinterface.cs" />
     <Compile Include="Program.cs" />
@@ -111,9 +112,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="EntityModels\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

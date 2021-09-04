@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using algo_02.EntityModels;
 
 namespace algo_02.LogicLayer
 {
@@ -57,7 +58,36 @@ namespace algo_02.LogicLayer
                 
             }
         }
-        
+        public int CreateNewWallet(int startupamount)
+        {
+
+            using(var context = new DatabaseContext())
+            {
+                try
+                {
+                    Portfolio newPort = new Portfolio();
+
+                    context.Portfolios.Add(newPort);
+
+                    Wallet newWallet = new Wallet();
+                    newWallet.PortfolioNumber = newPort.PortfolioNumber;
+                    newWallet.CurrentBalance = decimal.Parse(startupamount.ToString());
+                    context.Wallets.Add(newWallet);
+
+                    context.SaveChanges();
+                    return (from x in context.Wallets where x.PortfolioNumber == newPort.PortfolioNumber select x.WalletNumber).FirstOrDefault();
+
+                }
+                catch (Exception e)
+                {
+
+                    Console.WriteLine(e.InnerException);
+                    return 0;
+                }
+                    
+                
+            }
+        }
         public void AddSymbolToWatchList(List<string> symbols)
         {
             //crack open DB context
@@ -105,7 +135,7 @@ namespace algo_02.LogicLayer
                     foreach (var timeStamp in timeSeriesArray)
                     {
                         //create object to submit to DB here
-                        SYMBOL_HISTORY newEntry = new SYMBOL_HISTORY();
+                        SymbolObject newEntry = new SymbolObject();
                         
                         Console.WriteLine();
                         newEntry.Symbol = metaData.First["2. Symbol"].ToString();
@@ -116,11 +146,21 @@ namespace algo_02.LogicLayer
                         newEntry.Volume = int.Parse(timeStamp.First["5. volume"].ToString());
                         newEntry.DataTime = DateTime.Parse(timeStamp.ToString().Split('"')[1].Trim('"'));
 
-                        //add stock item history datapoint
-                        AddStockItemHistoryPointToDB(newEntry);
-
                         // add the first instance to stock item to create the current data for the item
-                        if (timeStamp == timeSeriesArray[0])
+                        if (!(timeStamp == timeSeriesArray[0]))
+                        {
+                            SYMBOL_HISTORY historydatapoint = new SYMBOL_HISTORY();
+                            historydatapoint.Symbol = newEntry.Symbol;
+                            historydatapoint.Open = newEntry.Open;
+                            historydatapoint.High = newEntry.High;
+                            historydatapoint.Low = newEntry.Low;
+                            historydatapoint.Close = newEntry.Close;
+                            historydatapoint.Volume = newEntry.Volume;
+                            historydatapoint.DataTime = newEntry.DataTime;
+                            //add stock item history datapoint
+                            AddStockItemHistoryPointToDB(historydatapoint);
+                        }
+                        else
                         {
                             Stock_Item currentdata = new Stock_Item();
                             currentdata.Symbol = newEntry.Symbol;
@@ -131,8 +171,8 @@ namespace algo_02.LogicLayer
                             currentdata.Volume = newEntry.Volume;
                             currentdata.DataTime = newEntry.DataTime;
                             AddCurrentStockItemtoDB(currentdata);
-                            
                         }
+
 
                     }
 
@@ -148,6 +188,54 @@ namespace algo_02.LogicLayer
 
             }
             
+        }
+        public void UpdateTickers(List<string> symbolData)
+        {
+            using (var context = new DatabaseContext())
+            {
+                //get symbols list
+                List<string> symbols = (from x in context.WatchLists select x.symbol).ToList();
+
+                foreach (var symbol in symbols)
+                {
+                    //move current data from the item to the stock item to the item history
+                    //create new history entry
+                    SYMBOL_HISTORY updatehistory = new SYMBOL_HISTORY();
+                    updatehistory.Symbol = symbol;
+                    updatehistory.Open = (from x in context.Stock_Item where x.Symbol == symbol select x.Open).FirstOrDefault();
+                    updatehistory.High = (from x in context.Stock_Item where x.Symbol == symbol select x.High).FirstOrDefault();
+                    updatehistory.Low = (from x in context.Stock_Item where x.Symbol == symbol select x.Low).FirstOrDefault();
+                    updatehistory.Close = (from x in context.Stock_Item where x.Symbol == symbol select x.Close).FirstOrDefault();
+                    updatehistory.Volume = (from x in context.Stock_Item where x.Symbol == symbol select x.Volume).FirstOrDefault();
+                    updatehistory.DataTime = (from x in context.Stock_Item where x.Symbol == symbol select x.DataTime).FirstOrDefault();
+                    //fill with data selected from symbolitem table
+                    //commit
+                    context.SYMBOL_HISTORY.Add(updatehistory);
+                    //change old data
+                    //  search json data for symbol match
+                    foreach (var datapoint in symbolData)
+                    {
+                        try
+                        {
+                            JToken symbolObject = JToken.Parse(datapoint);
+                            if (symbolObject.First.First["2. Symbol"].ToString() == symbol)
+                            {
+                                //grabbed correct matching symbol
+
+                            }
+                        }
+                        catch (Exception e)
+                        {
+
+                            Console.WriteLine("there was a problem converting Json data: " + e.Message);
+                            Console.ReadKey();
+                        }
+                    }
+
+                    //get the first timeseries data -> into stock item 
+
+                }
+            }
         }
 
         private string RemoveJsonStringBraces(JToken incomingToken)
@@ -165,14 +253,24 @@ namespace algo_02.LogicLayer
         }
         private void AddCurrentStockItemtoDB(Stock_Item itemtoadd)
         {
-            using (var context = new DatabaseContext())
+            try
             {
-                context.Stock_Item.Add(itemtoadd);
-                context.SaveChanges();
+                using (var context = new DatabaseContext())
+                {
+                    context.Stock_Item.Add(itemtoadd);
+                    context.SaveChanges();
 
-                string test = (from x in context.Stock_Item where x.Symbol == itemtoadd.Symbol select x).FirstOrDefault().ToString();
-                Console.WriteLine("selected this symbol object from database, successfull interaction" + test);
+                    string test = (from x in context.Stock_Item where x.Symbol == itemtoadd.Symbol select x.Symbol).FirstOrDefault();
+                    Console.WriteLine("selected this symbol object from database, successfull interaction symbol = " + test.Trim());
+                }
             }
+            catch (Exception e)
+            {
+
+                Console.WriteLine("database error ->" + e.InnerException);
+            }
+
         }
+        
     }
 }
