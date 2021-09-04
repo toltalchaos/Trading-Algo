@@ -12,7 +12,6 @@ E:\work\Trading-Algo\algo-02\algo-02\bin\Debug\EntityFramework.dll
 E:\work\Trading-Algo\algo-02\algo-02\bin\Debug\EntityFramework.SqlServer.dll
 E:\work\Trading-Algo\algo-02\algo-02\bin\Debug\EntityFramework.xml
 E:\work\Trading-Algo\algo-02\algo-02\bin\Debug\EntityFramework.SqlServer.xml
-E:\work\Trading-Algo\algo-02\algo-02\obj\Debug\algo-02.csprojAssemblyReference.cache
 E:\work\Trading-Algo\algo-02\algo-02\obj\Debug\algo-02.csproj.CoreCompileInputs.cache
 E:\work\Trading-Algo\algo-02\algo-02\obj\Debug\algo-02.csproj.CopyComplete
 E:\work\Trading-Algo\algo-02\algo-02\obj\Debug\algo-02.exe
@@ -37,3 +36,4 @@ E:\work\Trading-Algo\algo-02\algo-02\bin\Debug\System.Text.Encodings.Web.xml
 E:\work\Trading-Algo\algo-02\algo-02\bin\Debug\System.Text.Json.xml
 E:\work\Trading-Algo\algo-02\algo-02\bin\Debug\System.Threading.Tasks.Extensions.xml
 E:\work\Trading-Algo\algo-02\algo-02\bin\Debug\System.ValueTuple.xml
+E:\work\Trading-Algo\algo-02\algo-02\obj\Debug\algo-02.csproj.AssemblyReference.cache
