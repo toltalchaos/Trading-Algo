@@ -236,16 +236,33 @@ namespace algo_02.LogicLayer
                                 // add times to history data under this symbol
                                 List<DateTime> existingtimepoints = (from x in context.SYMBOL_HISTORY where x.Symbol == symbol select x.DataTime).ToList();
                                 List<JToken> incomingtimepoints = symbolObject.Last.First.Children().ToList();
-                                List<JToken> outgoingTimePoints = incomingtimepoints;
-                                //remove all existing time points for this symbol
+                                List<JToken> outgoingTimePoints = new List<JToken>();
+                                //create new outgoing to DB list
                                 foreach (var incomingTimePoint in incomingtimepoints)
                                 {
                                     DateTime incomingTime = DateTime.Parse(incomingTimePoint.ToString().Split('\"')[1]);
                                     if (existingtimepoints.Contains(incomingTime))
                                     {
-                                        outgoingTimePoints.Remove(incomingTimePoint);
                                         Console.WriteLine("this time signature for this symbol already exists");
                                     }
+                                    else
+                                    {
+                                        outgoingTimePoints.Add(incomingTime);
+                                    }
+                                }
+                                //iterate through outgoing times to add to DB
+                                foreach (var timePoint in outgoingTimePoints)
+                                {
+                                    SYMBOL_HISTORY historyDataPoint = new SYMBOL_HISTORY();
+                                    historyDataPoint.Symbol = symbol;
+                                    historyDataPoint.Open = decimal.Parse(timePoint.First["1. open"].ToString());
+                                    historyDataPoint.High = decimal.Parse(timePoint.First["2. high"].ToString());
+                                    historyDataPoint.Low = decimal.Parse(timePoint.First["3. low"].ToString());
+                                    historyDataPoint.Close = decimal.Parse(timePoint.First["4. close"].ToString());
+                                    historyDataPoint.Volume = int.Parse(timePoint.First["5. volume"].ToString());
+                                    historyDataPoint.DataTime = DateTime.Parse(timePoint.ToString().Split('"')[1].Trim('"'));
+                                    context.SYMBOL_HISTORY.Add(historyDataPoint);
+                                    Console.WriteLine("added new historical data to evaluate");
                                 }
                             }
                             
@@ -264,11 +281,6 @@ namespace algo_02.LogicLayer
             }
         }
 
-        private string RemoveJsonStringBraces(JToken incomingToken)
-        {
-            string cleanupString = incomingToken.ToString().TrimStart('{').TrimEnd('}');
-            return cleanupString;
-        }
         private void AddStockItemHistoryPointToDB(SYMBOL_HISTORY itemToAdd)
         {
             using(var context = new DatabaseContext())

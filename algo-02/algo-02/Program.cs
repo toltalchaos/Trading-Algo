@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using System.Data.SqlClient;
 using algo_02.LogicLayer;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace algo_02
 {
@@ -45,8 +46,11 @@ namespace algo_02
             modelInterface.InitSymbolHistory(symbolhistory);
 
             //prompt to begin algo trading
-
+            bool killCommand = false;
+            do
+            {
             //log data movement
+            //Thread.Sleep(300000);
             UpdateSymbols(symbols, out symbolhistory);
             modelInterface.UpdateTickers(symbolhistory);
                 //analyze stock history and current position -> decision
@@ -54,13 +58,15 @@ namespace algo_02
 
             //algo trade monitoring and logic - allow for interrupt between system threads 
 
+
+            } while (!killCommand);
             //exit trading
 
             //full audit report to CSV? - DB object 
 
-            //display gains or losses (chart?)
+            //display gains or losses (chart? - csv?)
 
-            //prompt for continue with data - start over - print and exit
+            //prompt for continue with data - start over (without killing DB?) - print and exit
 
         }
 
