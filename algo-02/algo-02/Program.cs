@@ -49,9 +49,9 @@ namespace algo_02
             bool killCommand = false;
             do
             {
-            //log data movement
-            //Thread.Sleep(300000);
-            UpdateSymbols(symbols, out symbolhistory);
+                //log data movement
+                //Thread.Sleep(300000); Calling Thread.Sleep with a value of Timeout.Infinite causes a thread to sleep until it is interrupted by another thread that calls the Thread.Interrupt method on the sleeping thread, or until it is terminated by a call to its Thread.Abort method. 
+                UpdateSymbols(symbols, out symbolhistory);
             modelInterface.UpdateTickers(symbolhistory);
                 //analyze stock history and current position -> decision
                 //sleep -10min - may need to review updating tickers for extended times
