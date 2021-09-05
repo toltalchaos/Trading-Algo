@@ -52,11 +52,16 @@ namespace algo_02
                 //log data movement
                 //Thread.Sleep(300000); Calling Thread.Sleep with a value of Timeout.Infinite causes a thread to sleep until it is interrupted by another thread that calls the Thread.Interrupt method on the sleeping thread, or until it is terminated by a call to its Thread.Abort method. 
                 UpdateSymbols(symbols, out symbolhistory);
-            modelInterface.UpdateTickers(symbolhistory);
+                modelInterface.UpdateTickers(symbolhistory);
                 //analyze stock history and current position -> decision
+                foreach (var symbol in symbols)
+                {
+                    DecisionMaker decision = new DecisionMaker();
+                    decision.EvaluateSymbol(symbol);
+                }
                 //sleep -10min - may need to review updating tickers for extended times
 
-            //algo trade monitoring and logic - allow for interrupt between system threads 
+                //algo trade monitoring and logic - allow for interrupt between system threads 
 
 
             } while (!killCommand);
@@ -115,7 +120,7 @@ namespace algo_02
                 try
                 {
                     string symbolInput = Console.ReadLine().Trim(' ').ToUpper();
-                    string symbolResponse = marketInterface.History_QueryMarket_Symbol(symbolInput);
+                    string symbolResponse = marketInterface.History_QueryMarket_Symbol_Full(symbolInput);
                     //if query string returns null - throw new
                     if (symbolResponse.Contains("Invalid API call."))
                     {

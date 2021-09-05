@@ -21,7 +21,7 @@ namespace algo_02.Entities
 
         public decimal? Close { get; set; }
 
-        public int? Volume { get; set; }
+        public int Volume { get; set; }
 
         [Key]
         [Column(Order = 1)]

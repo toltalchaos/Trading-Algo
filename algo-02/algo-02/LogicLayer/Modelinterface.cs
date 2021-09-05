@@ -12,6 +12,7 @@ namespace algo_02.LogicLayer
 {
     class Modelinterface
     {
+        #region init methods
         public void NUKEDATABASE()
         {
             using (var context = new DatabaseContext())
@@ -26,10 +27,10 @@ namespace algo_02.LogicLayer
                 List<Portfolio> portfolioCollection = (from x in context.Portfolios
                                                        select x).ToList();
                 List<Stock_Item> stockCollection = (from x in context.Stock_Item
-                                           select x).ToList();
+                                                    select x).ToList();
                 List<WatchList> watchListCollection = (from x in context.WatchLists
                                                        select x).ToList();
-                
+
                 foreach (var item in symbolHistoryCollection)
                 {
                     context.SYMBOL_HISTORY.Remove(item);
@@ -55,13 +56,13 @@ namespace algo_02.LogicLayer
                     context.WatchLists.Remove(item);
                 }
                 context.SaveChanges();
-                
+
             }
         }
         public int CreateNewWallet(int startupamount)
         {
 
-            using(var context = new DatabaseContext())
+            using (var context = new DatabaseContext())
             {
                 try
                 {
@@ -84,8 +85,8 @@ namespace algo_02.LogicLayer
                     Console.WriteLine(e.InnerException);
                     return 0;
                 }
-                    
-                
+
+
             }
         }
         public void AddSymbolToWatchList(List<string> symbols)
@@ -111,7 +112,7 @@ namespace algo_02.LogicLayer
                     Console.WriteLine(e.Message);
                 }
             }
-            
+
         }
         public void InitSymbolHistory(List<string> symbolHistory)
         {
@@ -122,7 +123,7 @@ namespace algo_02.LogicLayer
                 try
                 {
                     //var symbolHistObj = JsonConvert.DeserializeObject<dynamic>(item);
-                   
+
                     //https://www.newtonsoft.com/json/help/html/QueryingLINQtoJSON.htm#Index
                     JToken symbolObject = JToken.Parse(item);
                     JToken metaData = symbolObject.First;
@@ -134,7 +135,7 @@ namespace algo_02.LogicLayer
                     {
                         //create object to submit to DB here
                         SymbolObject newEntry = new SymbolObject();
-                        
+
                         newEntry.Symbol = metaData.First["2. Symbol"].ToString();
                         newEntry.Open = decimal.Parse(timeStamp.First["1. open"].ToString());
                         newEntry.High = decimal.Parse(timeStamp.First["2. high"].ToString());
@@ -180,11 +181,40 @@ namespace algo_02.LogicLayer
                     Console.WriteLine("there was a problem converting Json data: " + e.Message);
                     Console.ReadKey();
                 }
-               
+
 
             }
-            
+
         }
+        private void AddStockItemHistoryPointToDB(SYMBOL_HISTORY itemToAdd)
+        {
+            using(var context = new DatabaseContext())
+            {
+                context.SYMBOL_HISTORY.Add(itemToAdd);
+                context.SaveChanges();
+            }
+        }
+        private void AddCurrentStockItemtoDB(Stock_Item itemtoadd)
+        {
+            try
+            {
+                using (var context = new DatabaseContext())
+                {
+                    context.Stock_Item.Add(itemtoadd);
+                    context.SaveChanges();
+
+                    string test = (from x in context.Stock_Item where x.Symbol == itemtoadd.Symbol select x.Symbol).FirstOrDefault();
+                    Console.WriteLine("selected this symbol object from database, successfull interaction symbol = " + test.Trim());
+                }
+            }
+            catch (Exception e)
+            {
+
+                Console.WriteLine("database error ->" + e.InnerException);
+            }
+
+        }
+        #endregion
         public void UpdateTickers(List<string> symbolData)
         {
             using (var context = new DatabaseContext())
@@ -281,34 +311,44 @@ namespace algo_02.LogicLayer
             }
         }
 
-        private void AddStockItemHistoryPointToDB(SYMBOL_HISTORY itemToAdd)
+        #region get data
+        public bool Get_SymbolExistence(string symbol)
         {
             using(var context = new DatabaseContext())
             {
-                context.SYMBOL_HISTORY.Add(itemToAdd);
-                context.SaveChanges();
-            }
-        }
-        private void AddCurrentStockItemtoDB(Stock_Item itemtoadd)
-        {
-            try
-            {
-                using (var context = new DatabaseContext())
+                string existingSymbol = (from x in context.WatchLists where x.symbol == symbol select x).FirstOrDefault().ToString();
+                if (existingSymbol != null)
                 {
-                    context.Stock_Item.Add(itemtoadd);
-                    context.SaveChanges();
-
-                    string test = (from x in context.Stock_Item where x.Symbol == itemtoadd.Symbol select x.Symbol).FirstOrDefault();
-                    Console.WriteLine("selected this symbol object from database, successfull interaction symbol = " + test.Trim());
+                    return true;
+                }
+                else
+                {
+                    return false;
                 }
             }
-            catch (Exception e)
-            {
-
-                Console.WriteLine("database error ->" + e.InnerException);
-            }
-
         }
-        
+        public List<SYMBOL_HISTORY> Get_SymbolHistory(string symbol)
+        {
+            using (var context = new DatabaseContext())
+            {
+                return (from x in context.SYMBOL_HISTORY where x.Symbol == symbol select x).OrderBy(y => y.DataTime).ToList();
+            }
+        }
+        public Stock_Item Get_StockItem(string symbol)
+        {
+            using (var context = new DatabaseContext())
+            {
+                return (from x in context.Stock_Item where x.Symbol == symbol select x).First();
+            }
+        }
+
+
+        #endregion
+
+        #region set data
+
+        #endregion
+
+
     }
 }

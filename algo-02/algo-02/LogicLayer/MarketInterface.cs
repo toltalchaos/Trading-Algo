@@ -20,9 +20,9 @@ namespace algo_02
 
         }
 
-        private string HISTORY_QUERY_URL(string symbol)
+        private string HISTORY_QUERY_URL(string symbol, string fulldata)
         {
-            string QUERY_URL = $"https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol={symbol}&interval=5min&apikey=Z52ESGDDV1GBC6PH";
+            string QUERY_URL = $"https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol={symbol}&interval=5min&apikey=Z52ESGDDV1GBC6PH{fulldata}";
             return QUERY_URL;
         }
 
@@ -30,7 +30,16 @@ namespace algo_02
         {
             //incoming - string to check if market has matching symbol
             //outgoing - null string/confirmed symbol
-            Uri queryUri = new Uri(HISTORY_QUERY_URL(symbolIn)); //add headers after this
+            Uri queryUri = new Uri(HISTORY_QUERY_URL(symbolIn, null)); //add headers after this
+            return Get(queryUri).Result.ToString();
+
+
+        }
+        public string History_QueryMarket_Symbol_Full(string symbolIn)
+        {
+            //incoming - string to check if market has matching symbol
+            //outgoing - null string/confirmed symbol
+            Uri queryUri = new Uri(HISTORY_QUERY_URL(symbolIn, "outputsize=full")); //add headers after this
             return Get(queryUri).Result.ToString();
 
 
