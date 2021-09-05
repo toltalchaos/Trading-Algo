@@ -8,6 +8,9 @@ namespace algo_02.LogicLayer
 {
     class DecisionMaker
     {
+        //evaluate
+        //purchase/sell - ref wallet number - portfolio associated to wallet
+        //log audit (refDB triggers)
 
     }
 }
