@@ -8,6 +8,6 @@ for now:
 -ideally once this is all working i can take it to a windowed application and have live metrics and other useful tools. but lets see if this gets completed first.
 
 **tech used**
-- C# .NET framework
+- C# .NET framework (console application)
 - windows SQL server
 - json data from Alpha Vantage 
