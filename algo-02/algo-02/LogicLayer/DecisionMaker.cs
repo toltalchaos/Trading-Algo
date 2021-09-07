@@ -15,6 +15,8 @@ namespace algo_02.LogicLayer
             _BuySellIndex = buysellindexstarter;
         }
         public DecisionMaker() { }
+
+        public int GetBuySellIndex() { return _BuySellIndex; }
         //evaluate
         public void EvaluateSymbol(string symbol)
         {
@@ -23,7 +25,11 @@ namespace algo_02.LogicLayer
             if (modelinterface.Get_SymbolExistence(symbol))
             {
                 Volume_Assess(symbol);
-
+                MeanReversion_Assess(symbol);
+            }
+            else
+            {
+                throw new Exception("error trying to find symbol.... not sure why check symbol list");
             }
             
         }
@@ -77,7 +83,59 @@ namespace algo_02.LogicLayer
             }
 
         }
+        private void MeanReversion_Assess(string symbol)
+        {
+            Modelinterface modelinterface = new Modelinterface();
+            //get historical data 
+            List<SYMBOL_HISTORY> symbolHistory = modelinterface.Get_SymbolHistory(symbol);
+            Stock_Item currentItem = modelinterface.Get_StockItem(symbol);
+            decimal averageHigh = 0;
+            decimal averageLow = 0;
+            foreach (var historyDataPoint in symbolHistory)
+            {
+                averageHigh = averageHigh + historyDataPoint.High;
+                averageLow = averageLow + historyDataPoint.Low;
+            }
+            averageHigh = averageHigh / symbolHistory.Count();
+            averageLow = averageLow / symbolHistory.Count();
+            //combine the highs and lows to assess mean all time average
+            decimal allTimeAverage = (averageHigh + averageLow) / 2;
+            decimal currentAverge = (currentItem.High + currentItem.Low) / 2;
 
+            if (allTimeAverage > currentAverge)
+            {
+                _BuySellIndex = _BuySellIndex + 3;
+            }
+            else
+            {
+                _BuySellIndex = _BuySellIndex + 1;
+            }
+        }
+        private void Momentum_LongTerm_Assess(string symbol)
+        {
+            Modelinterface modelinterface = new Modelinterface();
+            //get historical data 
+            List<SYMBOL_HISTORY> symbolHistory = modelinterface.Get_SymbolHistory(symbol);
+            Stock_Item currentItem = modelinterface.Get_StockItem(symbol);
+            decimal momentum = 0;
+            for (int position = 0; position < symbolHistory.Count() - 1; position++)
+            {
+                decimal firstHigh = symbolHistory[position].High;
+                decimal firstLow = symbolHistory[position].Low;
+                decimal secondHigh = symbolHistory[position + 1].High;
+                decimal secondLow = symbolHistory[position + 1].Low;
+
+                //get the difference in value (positive or negative) => add to momentum counter
+                if ((firstHigh + firstLow) > (secondHigh + secondLow))
+                {
+
+                }
+                else
+                {
+
+                }
+            }
+        }
 
     }
 }

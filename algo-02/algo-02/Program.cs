@@ -56,8 +56,16 @@ namespace algo_02
                 //analyze stock history and current position -> decision
                 foreach (var symbol in symbols)
                 {
-                    DecisionMaker decision = new DecisionMaker();
-                    decision.EvaluateSymbol(symbol);
+                    try
+                    {
+                        DecisionMaker decision = new DecisionMaker();
+                        decision.EvaluateSymbol(symbol);
+
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message + e.InnerException);
+                    }
                 }
                 //sleep -10min - may need to review updating tickers for extended times
 

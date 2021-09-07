@@ -13,13 +13,13 @@ namespace algo_02.Entities
         [StringLength(5)]
         public string Symbol { get; set; }
 
-        public decimal? Open { get; set; }
+        public decimal Open { get; set; }
 
-        public decimal? High { get; set; }
+        public decimal High { get; set; }
 
-        public decimal? Low { get; set; }
+        public decimal Low { get; set; }
 
-        public decimal? Close { get; set; }
+        public decimal Close { get; set; }
 
         public int Volume { get; set; }
 
