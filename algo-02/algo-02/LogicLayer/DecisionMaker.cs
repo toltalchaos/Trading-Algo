@@ -112,6 +112,7 @@ namespace algo_02.LogicLayer
                 _BuySellIndex = _BuySellIndex + 1;
             }
         }
+        //could improve momentum by adding values for different % higher or lower then comparison to more timeframes close by (instability)
         private void Momentum_Assess(string symbol)
         {
             try
@@ -126,36 +127,40 @@ namespace algo_02.LogicLayer
                 decimal pastItem = symbolHistory.Last().Close;
                 if (((currentItem.Close / pastItem) * 100) > 0)
                 {
-                    _BuySellIndex += 1;
+                    _BuySellIndex += 0;
                 }
                 //if - over 30 days, add neg
                 else
                 {
-                    _BuySellIndex += -2;
+                    _BuySellIndex += -3;
                 }
                 //      30 days
+                decimal pastRatioToCompare = pastItem;
                 pastItem = (from x in symbolHistory where x.DataTime == currentItem.DataTime.AddMonths(-1) select x.Close).FirstOrDefault();
-                if (((currentItem.Close / pastItem) * 100) > 0)
+                if (((currentItem.Close / pastItem) * 100) > pastRatioToCompare)
+                {
+                    _BuySellIndex += 1;
+                }
+                //      1 week 
+                pastRatioToCompare = pastItem;
+                pastItem = (from x in symbolHistory where x.DataTime == currentItem.DataTime.AddDays(-7) select x.Close).FirstOrDefault();
+                if (((currentItem.Close / pastItem) * 100) > pastRatioToCompare)
                 {
                     _BuySellIndex += 2;
                 }
-                //      1 week 
-                pastItem = (from x in symbolHistory where x.DataTime == currentItem.DataTime.AddDays(-7) select x.Close).FirstOrDefault();
-                if (((currentItem.Close / pastItem) * 100) > 0)
-                {
-                    _BuySellIndex += 3;
-                }
                 //      1 day
+                pastRatioToCompare = pastItem;
                 pastItem = (from x in symbolHistory where x.DataTime == currentItem.DataTime.AddDays(-1) select x.Close).FirstOrDefault();
-                if (((currentItem.Close / pastItem) * 100) > 0)
+                if (((currentItem.Close / pastItem) * 100) > pastRatioToCompare)
                 {
-                    _BuySellIndex += 3;
+                    _BuySellIndex += 2;
                 }
                 //      1 hour
+                pastRatioToCompare = pastItem;
                 pastItem = (from x in symbolHistory where x.DataTime == currentItem.DataTime.AddHours(-1) select x.Close).FirstOrDefault();
-                if (((currentItem.Close / pastItem) * 100) > 0)
+                if (((currentItem.Close / pastItem) * 100) > pastRatioToCompare)
                 {
-                    _BuySellIndex += 4;
+                    _BuySellIndex += 3;
                 }
             }
             catch (Exception e)
@@ -165,6 +170,13 @@ namespace algo_02.LogicLayer
 
 
         }
-        private void Momentum_GapGo
+        private void Momentum_Dipping(string symbol)
+        {
+            Modelinterface modelinterface = new Modelinterface();
+            //get historical data 
+            List<SYMBOL_HISTORY> symbolHistory = modelinterface.Get_SymbolHistory(symbol);
+            Stock_Item currentItem = modelinterface.Get_StockItem(symbol);
+
+        }
     }
 }
