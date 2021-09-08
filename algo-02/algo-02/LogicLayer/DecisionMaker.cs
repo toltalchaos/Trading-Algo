@@ -26,6 +26,7 @@ namespace algo_02.LogicLayer
             {
                 Volume_Assess(symbol);
                 MeanReversion_Assess(symbol);
+                Momentum_Assess(symbol);
             }
             else
             {
@@ -111,31 +112,59 @@ namespace algo_02.LogicLayer
                 _BuySellIndex = _BuySellIndex + 1;
             }
         }
-        private void Momentum_LongTerm_Assess(string symbol)
+        private void Momentum_Assess(string symbol)
         {
-            Modelinterface modelinterface = new Modelinterface();
-            //get historical data 
-            List<SYMBOL_HISTORY> symbolHistory = modelinterface.Get_SymbolHistory(symbol);
-            Stock_Item currentItem = modelinterface.Get_StockItem(symbol);
-            decimal momentum = 0;
-            for (int position = 0; position < symbolHistory.Count() - 1; position++)
+            try
             {
-                decimal firstHigh = symbolHistory[position].High;
-                decimal firstLow = symbolHistory[position].Low;
-                decimal secondHigh = symbolHistory[position + 1].High;
-                decimal secondLow = symbolHistory[position + 1].Low;
-
-                //get the difference in value (positive or negative) => add to momentum counter
-                if ((firstHigh + firstLow) > (secondHigh + secondLow))
+                // evaluate each momentum benchmark looking for general trends and effect the index appropriately 
+                Modelinterface modelinterface = new Modelinterface();
+                //get historical data 
+                List<SYMBOL_HISTORY> symbolHistory = modelinterface.Get_SymbolHistory(symbol);
+                Stock_Item currentItem = modelinterface.Get_StockItem(symbol);
+                //get % values % = (currentItem.Close / pastItem) X 100
+                //      all time
+                decimal pastItem = symbolHistory.Last().Close;
+                if (((currentItem.Close / pastItem) * 100) > 0)
                 {
-
+                    _BuySellIndex += 1;
                 }
+                //if - over 30 days, add neg
                 else
                 {
-
+                    _BuySellIndex += -2;
+                }
+                //      30 days
+                pastItem = (from x in symbolHistory where x.DataTime == currentItem.DataTime.AddMonths(-1) select x.Close).FirstOrDefault();
+                if (((currentItem.Close / pastItem) * 100) > 0)
+                {
+                    _BuySellIndex += 2;
+                }
+                //      1 week 
+                pastItem = (from x in symbolHistory where x.DataTime == currentItem.DataTime.AddDays(-7) select x.Close).FirstOrDefault();
+                if (((currentItem.Close / pastItem) * 100) > 0)
+                {
+                    _BuySellIndex += 3;
+                }
+                //      1 day
+                pastItem = (from x in symbolHistory where x.DataTime == currentItem.DataTime.AddDays(-1) select x.Close).FirstOrDefault();
+                if (((currentItem.Close / pastItem) * 100) > 0)
+                {
+                    _BuySellIndex += 3;
+                }
+                //      1 hour
+                pastItem = (from x in symbolHistory where x.DataTime == currentItem.DataTime.AddHours(-1) select x.Close).FirstOrDefault();
+                if (((currentItem.Close / pastItem) * 100) > 0)
+                {
+                    _BuySellIndex += 4;
                 }
             }
-        }
+            catch (Exception e)
+            {
+                Console.WriteLine("likely that we are selecting the wrong times --->" + e.Message);
+            }
 
+
+        }
+        private void Momentum_GapGo
     }
 }
