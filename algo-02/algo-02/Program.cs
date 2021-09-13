@@ -25,7 +25,7 @@ namespace algo_02
         {
             // run DB stored proc to nuke?
             Modelinterface modelInterface = new Modelinterface();
-            modelInterface.NUKEDATABASE();
+            //modelInterface.NUKEDATABASE();
 
 
             //prompt for input on amount to trade with
@@ -60,6 +60,9 @@ namespace algo_02
                     {
                         DecisionMaker decision = new DecisionMaker();
                         decision.EvaluateSymbol(symbol);
+                        //create decision range on buy or sell from index outputs    
+                        modelInterface.PurchaseStock(symbol, walletNumber, decision.GetBuySellIndex());
+                        Console.ReadKey();
 
                     }
                     catch (Exception e)

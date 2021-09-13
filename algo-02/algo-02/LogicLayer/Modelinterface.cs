@@ -178,7 +178,7 @@ namespace algo_02.LogicLayer
                 catch (Exception e)
                 {
 
-                    Console.WriteLine("there was a problem converting Json data: " + e.Message);
+                    Console.WriteLine("(initsymbolhistory) there was a problem converting Json data: " + e.Message);
                     Console.ReadKey();
                 }
 
@@ -254,6 +254,8 @@ namespace algo_02.LogicLayer
                                 JToken firstTimeData = symbolObject.Last.First.First;
 
                                 Stock_Item itemToChange = (from x in context.Stock_Item where x.Symbol == symbol select x).FirstOrDefault();
+                                if (itemToChange.DataTime != DateTime.Parse(firstTimeData.ToString().Split('"')[1].Trim('"')).AddMinutes(5))
+                                {
                                 itemToChange.Open = decimal.Parse(firstTimeData.First["1. open"].ToString());
                                 itemToChange.High = decimal.Parse(firstTimeData.First["2. high"].ToString());
                                 itemToChange.Low = decimal.Parse(firstTimeData.First["3. low"].ToString());
@@ -261,6 +263,8 @@ namespace algo_02.LogicLayer
                                 itemToChange.Volume = int.Parse(firstTimeData.First["5. volume"].ToString());
                                 itemToChange.DataTime = DateTime.Parse(firstTimeData.ToString().Split('"')[1].Trim('"')).AddMinutes(5);
                                 context.Entry(itemToChange).State = System.Data.Entity.EntityState.Modified;
+
+                                }
 
                                 //additional additions to timedata here - create list from timedata - select and save non existing times
                                 // add times to history data under this symbol
@@ -295,20 +299,74 @@ namespace algo_02.LogicLayer
                                     Console.WriteLine("added new historical data to evaluate");
                                 }
                             }
-                            
+
+                            context.SaveChanges();
                         }
                         catch (Exception e)
                         {
 
-                            Console.WriteLine("there was a problem converting Json data: " + e.Message);
+                            Console.WriteLine("(UpdateTickers)there was a problem " + e.Message + e.InnerException);
                             Console.ReadKey();
                         }
                     }
 
-                    context.SaveChanges();
 
                 }
             }
+        }
+        public void PurchaseStock(string symbol, int walletNumber, int buySellIndex)
+        {
+            //obtain wallet data
+            //obtain symbol existence in portfolio - check valid symbol
+            // use buysell index to come up with % of portfolio to spend on stock - error handle
+            try
+            {
+                using (var context = new DatabaseContext())
+                {
+                    Wallet wallet = (from x in context.Wallets where x.WalletNumber == walletNumber select x).FirstOrDefault();
+                    
+                    if (Get_SymbolExistence(symbol))
+                    {
+                        //find max and min symbol numbers. -> create % purchase logic here
+                        if (buySellIndex > 7)
+                        {
+                            //buy
+                            buySellIndex += -7;
+                            decimal percentToBuy = (buySellIndex / 10) * 100;
+                            Console.WriteLine("BUY " + symbol);
+
+                            //transaction to buy shares up to the total % of the available amount in portfolio
+                            // get total amount available - reduce to the % value
+                            // get stock item - check for stock item in portfolio (more logic extra hold?)
+                            //buy shares -> add to portfolio with purchase logic - check DB triggers (should just need to update portfolio)
+
+                        }
+                        else if (buySellIndex < 4)
+                        {
+                            //sell
+                            buySellIndex += 7;
+                            Console.WriteLine("SELL " + symbol);
+                        }
+                        else
+                        {
+                            //hold
+                            
+                            Console.WriteLine("hold " + symbol);
+
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception("no symbol found, may not be selecting symbols properly?..");
+                    }
+
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            
         }
 
         #region get data
@@ -325,6 +383,13 @@ namespace algo_02.LogicLayer
                 {
                     return false;
                 }
+            }
+        }
+        public DateTime Get_SymbolDateTime(string symbol)
+        {
+            using (var context = new DatabaseContext())
+            {
+                return (from x in context.Stock_Item where x.Symbol == symbol select x.DataTime).First();
             }
         }
         public List<SYMBOL_HISTORY> Get_SymbolHistory(string symbol)
