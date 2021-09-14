@@ -393,24 +393,26 @@ namespace algo_02.LogicLayer
                 return thisStockItem.DataTime;
             }
         }
-        public SymbolObject Get_SymbolDate_ByDate(DateTime thisDateTime, string symbol)
+        public SymbolObject Get_SymbolObject_ByDate(DateTime thisDateTime, string symbol)
         {
             using(var context = new DatabaseContext())
             {
 
-                return (from x in context.SYMBOL_HISTORY where x.DataTime.Day == thisDateTime.Day 
-                        && x.DataTime.Month == thisDateTime.Month
-                        && x.DataTime.Year == thisDateTime.Year
-                        && x.DataTime.Hour == thisDateTime.Hour
-                        && x.Symbol == symbol select new SymbolObject{ 
-                        Symbol = x.Symbol,
-                        Open = x.Open,
-                        High = x.High,
-                        Low = x.Low,
-                        Close = x.Close,
-                        Volume = x.Volume,
-                        DataTime = x.DataTime
-                }).First();
+                Console.WriteLine(thisDateTime.ToString());
+                SymbolObject returnThis = (from x in context.SYMBOL_HISTORY 
+                                           where x.DataTime.Month == thisDateTime.Month
+                                                && x.Symbol == symbol 
+                                           select new SymbolObject{ 
+                                                Symbol = x.Symbol,
+                                                Open = x.Open,
+                                                High = x.High,
+                                                Low = x.Low,
+                                                Close = x.Close,
+                                                Volume = x.Volume,
+                                                DataTime = x.DataTime
+                                                                        }).FirstOrDefault();
+                Console.WriteLine(returnThis.DataTime.ToString());
+                return returnThis;
             }
         }
         public List<SYMBOL_HISTORY> Get_SymbolHistory(string symbol)

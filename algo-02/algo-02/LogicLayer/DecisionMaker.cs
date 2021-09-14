@@ -124,49 +124,51 @@ namespace algo_02.LogicLayer
                 //get historical data 
                 List<SYMBOL_HISTORY> symbolHistory = modelinterface.Get_SymbolHistory(symbol);
                 Stock_Item currentItem = modelinterface.Get_StockItem(symbol);
-                DateTime currentDate = modelinterface.Get_SymbolDateTime(symbol);
-                SymbolObject pastItem = modelinterface.Get_SymbolDate_ByDate(currentDate, currentItem.Symbol);
+                SymbolObject pastItem = modelinterface.Get_SymbolObject_ByDate(currentItem.DataTime, currentItem.Symbol);
                 //get % values % = (currentItem.Close / pastItem) X 100
                 //      all time
-                pastItem = modelinterface.Get_SymbolDate_ByDate(currentDate, currentItem.Symbol);
                 if (((currentItem.Close / pastItem.Close) * 100) > 0)
                 {
                     _BuySellIndex += 0;
+                }
+                else
+                {
+                    _BuySellIndex += -3;
+                }
+                //      30 days
+                decimal pastRatioToCompare = (currentItem.Close / pastItem.Close) * 100;
+
+                pastItem = modelinterface.Get_SymbolObject_ByDate(currentItem.DataTime.AddMonths(-1), currentItem.Symbol);
+               
+                if (((currentItem.Close / pastItem.Close) * 100) > pastRatioToCompare)
+                {
+                    _BuySellIndex += 1;
                 }
                 //if - over 30 days, add neg
                 else
                 {
                     _BuySellIndex += -3;
                 }
-                //      30 days
-                decimal pastRatioToCompare = pastItem.Close;
-
-                pastItem = modelinterface.Get_SymbolDate_ByDate(currentDate.AddMonths(-1), currentItem.Symbol);
-               
-                if (((currentItem.Close / pastItem.Close) * 100) > pastRatioToCompare)
-                {
-                    _BuySellIndex += 1;
-                }
                 //      1 week 
-                pastRatioToCompare = pastItem.Close;
+                pastRatioToCompare = (currentItem.Close / pastItem.Close) * 100;
                 
-                pastItem = modelinterface.Get_SymbolDate_ByDate(currentDate.AddDays(-7), currentItem.Symbol);
+                pastItem = modelinterface.Get_SymbolObject_ByDate(currentItem.DataTime.AddDays(-7), currentItem.Symbol);
                 if (((currentItem.Close / pastItem.Close) * 100) > pastRatioToCompare)
                 {
                     _BuySellIndex += 2;
                 }
                 //      1 day
-                pastRatioToCompare = pastItem.Close;
+                pastRatioToCompare = (currentItem.Close / pastItem.Close) * 100;
                 
-                pastItem = modelinterface.Get_SymbolDate_ByDate(currentDate.AddDays(-1), currentItem.Symbol);
+                pastItem = modelinterface.Get_SymbolObject_ByDate(currentItem.DataTime.AddDays(-1), currentItem.Symbol);
                 if (((currentItem.Close / pastItem.Close) * 100) > pastRatioToCompare)
                 {
                     _BuySellIndex += 2;
                 }
                 //      1 hour
-                pastRatioToCompare = pastItem.Close;
+                pastRatioToCompare = (currentItem.Close / pastItem.Close) * 100;
                
-                pastItem = modelinterface.Get_SymbolDate_ByDate(currentDate.AddHours(-1), currentItem.Symbol);
+                pastItem = modelinterface.Get_SymbolObject_ByDate(currentItem.DataTime.AddHours(-1), currentItem.Symbol);
                 if (((currentItem.Close / pastItem.Close) * 100) > pastRatioToCompare)
                 {
                     _BuySellIndex += 3;
