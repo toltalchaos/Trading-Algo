@@ -1,4 +1,5 @@
 ﻿using algo_02.Entities;
+using algo_02.EntityModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -124,10 +125,11 @@ namespace algo_02.LogicLayer
                 List<SYMBOL_HISTORY> symbolHistory = modelinterface.Get_SymbolHistory(symbol);
                 Stock_Item currentItem = modelinterface.Get_StockItem(symbol);
                 DateTime currentDate = modelinterface.Get_SymbolDateTime(symbol);
+                SymbolObject pastItem = modelinterface.Get_SymbolDate_ByDate(currentDate, currentItem.Symbol);
                 //get % values % = (currentItem.Close / pastItem) X 100
                 //      all time
-                decimal pastItem = symbolHistory.Last().Close;
-                if (((currentItem.Close / pastItem) * 100) > 0)
+                pastItem = modelinterface.Get_SymbolDate_ByDate(currentDate, currentItem.Symbol);
+                if (((currentItem.Close / pastItem.Close) * 100) > 0)
                 {
                     _BuySellIndex += 0;
                 }
@@ -137,34 +139,35 @@ namespace algo_02.LogicLayer
                     _BuySellIndex += -3;
                 }
                 //      30 days
-                decimal pastRatioToCompare = pastItem;
-                
-                pastItem = (from x in symbolHistory where x.Symbol == currentItem.Symbol && x.DataTime == (currentDate.AddMonths(-1)) select x.Close).First();
-                if (((currentItem.Close / pastItem) * 100) > pastRatioToCompare && pastItem != 0)
+                decimal pastRatioToCompare = pastItem.Close;
+
+                pastItem = modelinterface.Get_SymbolDate_ByDate(currentDate.AddMonths(-1), currentItem.Symbol);
+               
+                if (((currentItem.Close / pastItem.Close) * 100) > pastRatioToCompare)
                 {
                     _BuySellIndex += 1;
                 }
                 //      1 week 
-                pastRatioToCompare = pastItem;
+                pastRatioToCompare = pastItem.Close;
                 
-                pastItem = (from x in symbolHistory where x.Symbol == currentItem.Symbol && x.DataTime == (currentDate.AddDays(-7)) select x.Close).FirstOrDefault();
-                if (((currentItem.Close / pastItem) * 100) > pastRatioToCompare)
+                pastItem = modelinterface.Get_SymbolDate_ByDate(currentDate.AddDays(-7), currentItem.Symbol);
+                if (((currentItem.Close / pastItem.Close) * 100) > pastRatioToCompare)
                 {
                     _BuySellIndex += 2;
                 }
                 //      1 day
-                pastRatioToCompare = pastItem;
+                pastRatioToCompare = pastItem.Close;
                 
-                pastItem = (from x in symbolHistory where x.Symbol == currentItem.Symbol && x.DataTime == (currentDate.AddDays(-1)) select x.Close).FirstOrDefault();
-                if (((currentItem.Close / pastItem) * 100) > pastRatioToCompare)
+                pastItem = modelinterface.Get_SymbolDate_ByDate(currentDate.AddDays(-1), currentItem.Symbol);
+                if (((currentItem.Close / pastItem.Close) * 100) > pastRatioToCompare)
                 {
                     _BuySellIndex += 2;
                 }
                 //      1 hour
-                pastRatioToCompare = pastItem;
+                pastRatioToCompare = pastItem.Close;
                
-                pastItem = (from x in symbolHistory where x.Symbol == currentItem.Symbol && x.DataTime == (currentDate.AddHours(-1)) select x.Close).FirstOrDefault();
-                if (((currentItem.Close / pastItem) * 100) > pastRatioToCompare)
+                pastItem = modelinterface.Get_SymbolDate_ByDate(currentDate.AddHours(-1), currentItem.Symbol);
+                if (((currentItem.Close / pastItem.Close) * 100) > pastRatioToCompare)
                 {
                     _BuySellIndex += 3;
                 }
@@ -172,6 +175,7 @@ namespace algo_02.LogicLayer
             catch (Exception e)
             {
                 Console.WriteLine("likely that we are selecting the wrong times --->" + e.Message + e.InnerException);
+                Console.ReadKey();
             }
 
 

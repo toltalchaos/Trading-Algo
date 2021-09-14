@@ -389,7 +389,28 @@ namespace algo_02.LogicLayer
         {
             using (var context = new DatabaseContext())
             {
-                return (from x in context.Stock_Item where x.Symbol == symbol select x.DataTime).First();
+                Stock_Item thisStockItem = (from x in context.Stock_Item where x.Symbol == symbol select x).ToList().First();
+                return thisStockItem.DataTime;
+            }
+        }
+        public SymbolObject Get_SymbolDate_ByDate(DateTime thisDateTime, string symbol)
+        {
+            using(var context = new DatabaseContext())
+            {
+
+                return (from x in context.SYMBOL_HISTORY where x.DataTime.Day == thisDateTime.Day 
+                        && x.DataTime.Month == thisDateTime.Month
+                        && x.DataTime.Year == thisDateTime.Year
+                        && x.DataTime.Hour == thisDateTime.Hour
+                        && x.Symbol == symbol select new SymbolObject{ 
+                        Symbol = x.Symbol,
+                        Open = x.Open,
+                        High = x.High,
+                        Low = x.Low,
+                        Close = x.Close,
+                        Volume = x.Volume,
+                        DataTime = x.DataTime
+                }).First();
             }
         }
         public List<SYMBOL_HISTORY> Get_SymbolHistory(string symbol)

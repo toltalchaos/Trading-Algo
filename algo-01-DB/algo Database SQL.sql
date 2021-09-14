@@ -38,20 +38,20 @@ GO
 
 CREATE TABLE Stock_Item
 (
-    Symbol VARCHAR(5)    CONSTRAINT PK_STKITEM       PRIMARY KEY,
-    [Open] DECIMAL(10,4)     CONSTRAINT CK_OPN_PRICE CHECK([Open] > 0),
-    High DECIMAL(10,4)     CONSTRAINT CK_HI_PRICE CHECK(High > 0),
-    Low DECIMAL(10,4)     CONSTRAINT CK_LO_PRICE CHECK(Low > 0),
-    [Close] DECIMAL(10,4)     CONSTRAINT CK_CLS_PRICE CHECK([Close] > 0),
-    Volume INTEGER CONSTRAINT CK_VOL_AMNT CHECK(Volume >= 0),
+    Symbol VARCHAR(5)    CONSTRAINT PK_STKITEM      PRIMARY KEY NOT NULL ,
+    [Open] DECIMAL(10,4)     CONSTRAINT CK_OPN_PRICE CHECK([Open] > 0) NOT NULL ,
+    High DECIMAL(10,4)     CONSTRAINT CK_HI_PRICE CHECK(High > 0) NOT NULL ,
+    Low DECIMAL(10,4)     CONSTRAINT CK_LO_PRICE CHECK(Low > 0) NOT NULL ,
+    [Close] DECIMAL(10,4)     CONSTRAINT CK_CLS_PRICE CHECK([Close] > 0) NOT NULL ,
+    Volume INTEGER CONSTRAINT CK_VOL_AMNT CHECK(Volume >= 0) NOT NULL ,
     DataTime DATETIME 
 )
 GO 
 
 Create TABLE Portfolio
 (
-    PortfolioNumber INTEGER CONSTRAINT PK_Portfolio PRIMARY KEY IDENTITY(1,1),
-    Symbol VARCHAR(5) CONSTRAINT FK_port_Symbol FOREIGN KEY(Symbol) REFERENCES Stock_Item(Symbol),
+    PortfolioNumber INTEGER CONSTRAINT PK_Portfolio PRIMARY KEY IDENTITY(1,1) NOT NULL ,
+    Symbol VARCHAR(5) CONSTRAINT FK_port_Symbol FOREIGN KEY(Symbol) REFERENCES Stock_Item(Symbol) ,
     SalePrice DECIMAL(10,4) CONSTRAINT CK_PurPrice CHECK(SalePrice > 0),
     AmountOwned INTEGER CONSTRAINT CK_Portfolio_AmtOwned CHECK(AmountOwned >= 0),
 )
@@ -59,9 +59,9 @@ GO
 
 CREATE TABLE Wallet
 (
-    WalletNumber INTEGER CONSTRAINT PK_Wallet PRIMARY KEY IDENTITY(1,1),
-    PortfolioNumber INTEGER CONSTRAINT FK_Portfolio FOREIGN KEY(PortfolioNumber) REFERENCES Portfolio(PortfolioNumber),
-    CurrentBalance Decimal(15,2) CONSTRAINT CK_Wallet_Balance CHECK(CurrentBalance > 0),
+    WalletNumber INTEGER CONSTRAINT PK_Wallet PRIMARY KEY IDENTITY(1,1) NOT NULL ,
+    PortfolioNumber INTEGER CONSTRAINT FK_Portfolio FOREIGN KEY(PortfolioNumber) REFERENCES Portfolio(PortfolioNumber) NOT NULL ,
+    CurrentBalance Decimal(15,2) CONSTRAINT CK_Wallet_Balance CHECK(CurrentBalance > 0) NOT NULL ,
     LastTransactionDirection VARCHAR(4) CONSTRAINT CK_wallet_BuySell CHECK(LastTransactionDirection IN ('BUY', 'SELL'))
 
 )
@@ -70,13 +70,13 @@ GO
 --audit log table for each symbol
 CREATE TABLE SYMBOL_HISTORY
 (
-     Symbol VARCHAR(5),
-    [Open] DECIMAL(10,4)     CONSTRAINT CK_OPN_PRICE_Hist CHECK([Open] > 0),
-    High DECIMAL(10,4)     CONSTRAINT CK_HI_PRICE_Hist CHECK(High > 0),
-    Low DECIMAL(10,4)     CONSTRAINT CK_LO_PRICE_Hist CHECK(Low > 0),
-    [Close] DECIMAL(10,4)     CONSTRAINT CK_CLS_PRICE_Hist CHECK([Close] > 0),
-    Volume INTEGER CONSTRAINT CK_VOL_AMNT_Hist CHECK(Volume >= 0),
-    DataTime DATETIME,
+     Symbol VARCHAR(5) NOT NULL ,
+    [Open] DECIMAL(10,4)     CONSTRAINT CK_OPN_PRICE_Hist CHECK([Open] > 0) NOT NULL ,
+    High DECIMAL(10,4)     CONSTRAINT CK_HI_PRICE_Hist CHECK(High > 0) NOT NULL ,
+    Low DECIMAL(10,4)     CONSTRAINT CK_LO_PRICE_Hist CHECK(Low > 0) NOT NULL ,
+    [Close] DECIMAL(10,4)     CONSTRAINT CK_CLS_PRICE_Hist CHECK([Close] > 0) NOT NULL ,
+    Volume INTEGER CONSTRAINT CK_VOL_AMNT_Hist CHECK(Volume >= 0) NOT NULL ,
+    DataTime DATETIME NOT NULL ,
 
     PRIMARY KEY (Symbol, DataTime)
 
@@ -85,31 +85,31 @@ GO
 
 CREATE TABLE WALLET_HISTORY
 (
-    transactionNumber INTEGER CONSTRAINT PK_Transaction PRIMARY KEY IDENTITY(1,1),
-    PortfolioNumber INTEGER CONSTRAINT FK_Walhist_Portfolio FOREIGN KEY(PortfolioNumber) REFERENCES Portfolio(PortfolioNumber),
+    transactionNumber INTEGER CONSTRAINT PK_Transaction PRIMARY KEY IDENTITY(1,1) NOT NULL ,
+    PortfolioNumber INTEGER CONSTRAINT FK_Walhist_Portfolio FOREIGN KEY(PortfolioNumber) REFERENCES Portfolio(PortfolioNumber) NOT NULL ,
     Balance  Decimal(15,2), 
     Symbol VARCHAR(5) CONSTRAINT FK_transact_Symbol FOREIGN KEY(Symbol) REFERENCES Stock_Item(Symbol),
     Amount DECIMAL(10,4) CONSTRAINT CK_trans_zero CHECK(Amount > 0),
-    Direction VARCHAR(4) CONSTRAINT CK_transact_BuySell CHECK(Direction IN ('BUY', 'SELL'))
+    Direction VARCHAR(4) CONSTRAINT CK_transact_BuySell CHECK(Direction IN ('BUY', 'SELL')) 
 )
 GO
 CREATE Table WatchList
 (
-    symbol VARCHAR(5) PRIMARY KEY
+    symbol VARCHAR(5) PRIMARY KEY NOT NULL 
 )
 GO
 
 --load nill data
-INSERT INTO Stock_Item(Symbol, [Open], High, Low, [Close], Volume, DataTime)
-VALUES ('XXX', 420.69, 555.00, 69.00, 410.69, 1234, GETDATE()),
-        ('YYY', 420.69, 555.00, 69.00, 410.69, 1234, GETDATE())
+-- INSERT INTO Stock_Item(Symbol, [Open], High, Low, [Close], Volume, DataTime)
+-- VALUES ('XXX', 420.69, 555.00, 69.00, 410.69, 1234, GETDATE()),
+--         ('YYY', 420.69, 555.00, 69.00, 410.69, 1234, GETDATE())
 
-INSERT INTO Portfolio(Symbol, SalePrice, AmountOwned)
-VALUES ('XXX', 420.69, 15),
-        ('YYY', 420.69, 0)
+-- INSERT INTO Portfolio(Symbol, SalePrice, AmountOwned)
+-- VALUES ('XXX', 420.69, 15),
+--         ('YYY', 420.69, 0)
 
-INSERT INTO Wallet(PortfolioNumber, CurrentBalance)
-VALUES (1, 420420)
+-- INSERT INTO Wallet(PortfolioNumber, CurrentBalance)
+-- VALUES (1, 420420)
 
 -- create triggers to maintain DB
     --REMOVE ROWS FROM PORTFOLIO WHERE AMOUNT OWNED = 0 

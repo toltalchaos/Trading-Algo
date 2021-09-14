@@ -25,7 +25,7 @@ namespace algo_02
         {
             // run DB stored proc to nuke?
             Modelinterface modelInterface = new Modelinterface();
-            //modelInterface.NUKEDATABASE();
+            modelInterface.NUKEDATABASE();
 
 
             //prompt for input on amount to trade with
@@ -51,7 +51,6 @@ namespace algo_02
             {
                 //log data movement
                 //Thread.Sleep(300000); Calling Thread.Sleep with a value of Timeout.Infinite causes a thread to sleep until it is interrupted by another thread that calls the Thread.Interrupt method on the sleeping thread, or until it is terminated by a call to its Thread.Abort method. 
-                UpdateSymbols(symbols, out symbolhistory);
                 modelInterface.UpdateTickers(symbolhistory);
                 //analyze stock history and current position -> decision
                 foreach (var symbol in symbols)
@@ -70,6 +69,8 @@ namespace algo_02
                         Console.WriteLine(e.Message + e.InnerException);
                     }
                 }
+                //note: need to add logic to change symbol error handle for bad return json strings!!!!
+                //UpdateSymbols(symbols, out symbolhistory);
                 //sleep -10min - may need to review updating tickers for extended times
 
                 //algo trade monitoring and logic - allow for interrupt between system threads 
@@ -120,7 +121,7 @@ namespace algo_02
             List<string> historyData = new List<string>();
             List<string> symbolList = new List<string>();
 
-            
+
             do
             {
                 //work- here
@@ -135,7 +136,11 @@ namespace algo_02
                     //if query string returns null - throw new
                     if (symbolResponse.Contains("Invalid API call."))
                     {
-                        throw new Exception($"The symbol {symbolInput} was not found, hit \"Y\" to try another");
+                        throw new Exception($"The symbol {symbolInput} was not found, hit \"N\" to try another");
+                    }
+                    else if (symbolResponse.Contains("{\n    \"Note\": \"Thank you for using Alpha Vantage! Our standard API call frequency is 5 calls per minute and 500 calls per day. Please visit https://www.alphavantage.co/premium/ if you would like to target a higher API call frequency.\"\n}"))
+                    {
+                        throw new Exception(symbolResponse);
                     }
                     else
                     {
