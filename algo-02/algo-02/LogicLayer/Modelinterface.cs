@@ -398,7 +398,6 @@ namespace algo_02.LogicLayer
             using(var context = new DatabaseContext())
             {
 
-                Console.WriteLine(thisDateTime.ToString());
                 SymbolObject returnThis = (from x in context.SYMBOL_HISTORY 
                                            where x.DataTime.Month == thisDateTime.Month
                                                 && x.Symbol == symbol 
@@ -411,7 +410,7 @@ namespace algo_02.LogicLayer
                                                 Volume = x.Volume,
                                                 DataTime = x.DataTime
                                                                         }).FirstOrDefault();
-                Console.WriteLine(returnThis.DataTime.ToString());
+                //Console.WriteLine(returnThis.DataTime.ToString());
                 return returnThis;
             }
         }

@@ -104,7 +104,7 @@ namespace algo_02
             catch (Exception e)
             {
                 Console.WriteLine($"{e.Message} Please Enter a whole number and press enter.");
-                AlgoStartupAmount();
+                startupAmount = AlgoStartupAmount();
 
             }
             return startupAmount;

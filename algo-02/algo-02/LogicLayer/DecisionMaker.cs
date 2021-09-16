@@ -140,9 +140,10 @@ namespace algo_02.LogicLayer
 
                 pastItem = modelinterface.Get_SymbolObject_ByDate(currentItem.DataTime.AddMonths(-1), currentItem.Symbol);
                
-                if (((currentItem.Close / pastItem.Close) * 100) > pastRatioToCompare)
+                if (pastItem!=null && ((currentItem.Close / pastItem.Close) * 100) > pastRatioToCompare)
                 {
                     _BuySellIndex += 1;
+                    pastRatioToCompare = (currentItem.Close / pastItem.Close) * 100;
                 }
                 //if - over 30 days, add neg
                 else
@@ -150,26 +151,28 @@ namespace algo_02.LogicLayer
                     _BuySellIndex += -3;
                 }
                 //      1 week 
-                pastRatioToCompare = (currentItem.Close / pastItem.Close) * 100;
+                
                 
                 pastItem = modelinterface.Get_SymbolObject_ByDate(currentItem.DataTime.AddDays(-7), currentItem.Symbol);
-                if (((currentItem.Close / pastItem.Close) * 100) > pastRatioToCompare)
+                if (pastItem != null && ((currentItem.Close / pastItem.Close) * 100) > pastRatioToCompare)
                 {
                     _BuySellIndex += 2;
+                    pastRatioToCompare = (currentItem.Close / pastItem.Close) * 100;
                 }
                 //      1 day
-                pastRatioToCompare = (currentItem.Close / pastItem.Close) * 100;
+               
                 
                 pastItem = modelinterface.Get_SymbolObject_ByDate(currentItem.DataTime.AddDays(-1), currentItem.Symbol);
-                if (((currentItem.Close / pastItem.Close) * 100) > pastRatioToCompare)
+                if (pastItem != null && ((currentItem.Close / pastItem.Close) * 100) > pastRatioToCompare)
                 {
                     _BuySellIndex += 2;
+                    pastRatioToCompare = (currentItem.Close / pastItem.Close) * 100;
                 }
                 //      1 hour
-                pastRatioToCompare = (currentItem.Close / pastItem.Close) * 100;
+               
                
                 pastItem = modelinterface.Get_SymbolObject_ByDate(currentItem.DataTime.AddHours(-1), currentItem.Symbol);
-                if (((currentItem.Close / pastItem.Close) * 100) > pastRatioToCompare)
+                if (pastItem != null && ((currentItem.Close / pastItem.Close) * 100) > pastRatioToCompare)
                 {
                     _BuySellIndex += 3;
                 }
