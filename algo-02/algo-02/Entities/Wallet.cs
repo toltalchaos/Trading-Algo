@@ -12,9 +12,9 @@ namespace algo_02.Entities
         [Key]
         public int WalletNumber { get; set; }
 
-        public int? PortfolioNumber { get; set; }
+        public int PortfolioNumber { get; set; }
 
-        public decimal? CurrentBalance { get; set; }
+        public decimal CurrentBalance { get; set; }
 
         [StringLength(4)]
         public string LastTransactionDirection { get; set; }

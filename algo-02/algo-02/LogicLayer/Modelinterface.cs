@@ -328,24 +328,26 @@ namespace algo_02.LogicLayer
                     if (Get_SymbolExistence(symbol))
                     {
                         //find max and min symbol numbers. -> create % purchase logic here
+                        Console.WriteLine("buy sell index = " + buySellIndex);
                         if (buySellIndex > 7)
                         {
                             //buy
                             buySellIndex += -7;
-                            decimal percentToBuy = (buySellIndex / 10) * 100;
+                            decimal percentToBuy = buySellIndex / 10m;
                             Console.WriteLine("BUY " + symbol);
 
                             //transaction to buy shares up to the total % of the available amount in portfolio
                             // get total amount available - reduce to the % value
                             // get stock item - check for stock item in portfolio (more logic extra hold?)
                             //buy shares -> add to portfolio with purchase logic - check DB triggers (should just need to update portfolio)
-
+                            BuyStock(percentToBuy, symbol, wallet);
                         }
-                        else if (buySellIndex < 4)
+                        else if (buySellIndex < 2)
                         {
                             //sell
                             buySellIndex += 7;
                             Console.WriteLine("SELL " + symbol);
+                            SellStock((buySellIndex * 10m), symbol, wallet);
                         }
                         else
                         {
@@ -367,6 +369,100 @@ namespace algo_02.LogicLayer
                 Console.WriteLine(e.Message);
             }
             
+        }
+
+        private void BuyStock(decimal percentOfWallet, string symbol, Wallet wallet)
+        {
+            using(var context = new DatabaseContext())
+            {
+                Portfolio portfolioItem = (from x in context.Portfolios where x.PortfolioNumber == wallet.PortfolioNumber && x.Symbol == symbol select x).FirstOrDefault();
+                Stock_Item symbolData = (from x in context.Stock_Item where x.Symbol == symbol select x).FirstOrDefault();
+                //check can afford minimum of 1 share
+                if (wallet.CurrentBalance > symbolData.Close)
+                {
+
+                if (portfolioItem == null)
+                {
+                    //no portfolio item found - file new
+                    portfolioItem.PortfolioNumber = wallet.PortfolioNumber;
+                    portfolioItem.Symbol = symbol;
+                    // get % of walet balance willing to spend
+                    decimal spendingAmount = Math.Round(wallet.CurrentBalance / percentOfWallet, 2);
+                    // number of shares that fit in there(ish) - may eventually throw insufficent funds
+                    int numberOfShares = int.Parse(Math.Round(spendingAmount * symbolData.Close, 0).ToString());
+
+                    Console.WriteLine("debug here" + numberOfShares + "should be a valid int");
+                    Console.ReadKey();
+
+                    portfolioItem.SalePrice = numberOfShares * symbolData.Close;
+                    portfolioItem.AmountOwned = numberOfShares;
+
+                    context.Portfolios.Add(portfolioItem);
+                    
+                }
+                else
+                {
+                    decimal spendingAmount = Math.Round(wallet.CurrentBalance / percentOfWallet, 2);
+                    int numberOfShares = int.Parse(Math.Round(spendingAmount * symbolData.Close, 0).ToString());
+
+                    Console.WriteLine("debug here" + numberOfShares + "should be a valid int (existing)");
+                    Console.ReadKey();
+
+                    portfolioItem.SalePrice = numberOfShares * symbolData.Close;
+                    portfolioItem.AmountOwned = numberOfShares;
+                    context.Entry(portfolioItem).State = System.Data.Entity.EntityState.Modified;
+                }
+                    try
+                    {
+                        context.SaveChanges();
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("error -  may be insufficent funds" + e.Message + e.InnerException);
+                    }
+                
+                }
+            }
+            
+            
+        }
+        private void SellStock(decimal percentOfOwned, string symbol, Wallet wallet)
+        {
+            using (var context = new DatabaseContext())
+            {
+                Portfolio portfolioItem = (from x in context.Portfolios where x.PortfolioNumber == wallet.PortfolioNumber && x.Symbol == symbol select x).FirstOrDefault();
+                Stock_Item symbolData = (from x in context.Stock_Item where x.Symbol == symbol select x).FirstOrDefault();
+                //check can afford minimum of 1 share
+                if (wallet.CurrentBalance > symbolData.Close)
+                {
+
+                    if (portfolioItem == null)
+                    {
+                        //do nothing - nothing to sell
+                    }
+                    else
+                    {
+                        //number of shares to sell based on index % value
+                        int numberOfShares = int.Parse(Math.Round((decimal.Parse(portfolioItem.AmountOwned.ToString())) * (percentOfOwned/100), 0).ToString());
+
+                        Console.WriteLine("debug here" + numberOfShares + "should be a valid int (existing)");
+                        Console.ReadKey();
+
+                        portfolioItem.SalePrice = -numberOfShares * symbolData.Close;
+                        portfolioItem.AmountOwned = -numberOfShares;
+                        context.Entry(portfolioItem).State = System.Data.Entity.EntityState.Modified;
+                    }
+                    try
+                    {
+                        context.SaveChanges();
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("error -  may be insufficent funds" + e.Message + e.InnerException);
+                    }
+
+                }
+            }
         }
 
         #region get data
