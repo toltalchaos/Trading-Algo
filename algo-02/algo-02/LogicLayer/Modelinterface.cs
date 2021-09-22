@@ -277,7 +277,7 @@ namespace algo_02.LogicLayer
                                     DateTime incomingTime = DateTime.Parse(incomingTimePoint.ToString().Split('\"')[1]);
                                     if (existingtimepoints.Contains(incomingTime))
                                     {
-                                        Console.WriteLine("this time signature for this symbol already exists");
+                                        //Console.WriteLine("this time signature for this symbol already exists");
                                     }
                                     else
                                     {
@@ -314,6 +314,7 @@ namespace algo_02.LogicLayer
                 }
             }
         }
+
         public void PurchaseStock(string symbol, int walletNumber, int buySellIndex)
         {
             //obtain wallet data
@@ -329,7 +330,7 @@ namespace algo_02.LogicLayer
                     {
                         //find max and min symbol numbers. -> create % purchase logic here
                         Console.WriteLine("buy sell index = " + buySellIndex);
-                        if (buySellIndex > 7)
+                        if (buySellIndex >= 5)
                         {
                             //buy
                             buySellIndex += -7;
@@ -495,7 +496,7 @@ namespace algo_02.LogicLayer
             {
 
                 SymbolObject returnThis = (from x in context.SYMBOL_HISTORY 
-                                           where x.DataTime.Month == thisDateTime.Month
+                                           where x.DataTime == thisDateTime
                                                 && x.Symbol == symbol 
                                            select new SymbolObject{ 
                                                 Symbol = x.Symbol,
@@ -506,7 +507,11 @@ namespace algo_02.LogicLayer
                                                 Volume = x.Volume,
                                                 DataTime = x.DataTime
                                                                         }).FirstOrDefault();
-                //Console.WriteLine(returnThis.DataTime.ToString());
+                if (returnThis != null)
+                {
+                Console.WriteLine(returnThis.DataTime.ToString());
+                }    
+                
                 return returnThis;
             }
         }

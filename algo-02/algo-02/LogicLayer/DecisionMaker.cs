@@ -127,9 +127,9 @@ namespace algo_02.LogicLayer
                 SymbolObject pastItem = modelinterface.Get_SymbolObject_ByDate(currentItem.DataTime, currentItem.Symbol);
                 //get % values % = (currentItem.Close / pastItem) X 100
                 //      all time
-                if (((currentItem.Close / pastItem.Close) * 100) > 0)
+                if (((currentItem.Close / pastItem.Close) * 100) > 1)
                 {
-                    _BuySellIndex += 0;
+                    _BuySellIndex += 3;
                 }
                 else
                 {
@@ -187,35 +187,51 @@ namespace algo_02.LogicLayer
         }
         private void Momentum_Dipping(string symbol)
         {
-            Modelinterface modelinterface = new Modelinterface();
-            //get historical data 
-            List<SYMBOL_HISTORY> symbolHistory = modelinterface.Get_SymbolHistory(symbol);
-            Stock_Item currentItem = modelinterface.Get_StockItem(symbol);
-            decimal oneHour = (from x in symbolHistory where x.DataTime == currentItem.DataTime.AddHours(-1) select x.Close).FirstOrDefault();
-            decimal last15Min = (from x in symbolHistory where x.DataTime == currentItem.DataTime.AddMinutes(-15) select x.Close).FirstOrDefault();
-            decimal oneHourTrend = ((currentItem.Close / oneHour) * 100);
-            decimal fifteenMinuteTrend = ((currentItem.Close / last15Min) * 100);
-            if (oneHourTrend > fifteenMinuteTrend)
+            try
             {
-                //the long term trend is larger then the trend in the last 15 minutes.
-                if (oneHourTrend / 2 > fifteenMinuteTrend)
+                Modelinterface modelinterface = new Modelinterface();
+                //get historical data 
+                List<SYMBOL_HISTORY> symbolHistory = modelinterface.Get_SymbolHistory(symbol);
+                Stock_Item currentItem = modelinterface.Get_StockItem(symbol);
+                decimal oneHour = (from x in symbolHistory where x.DataTime == currentItem.DataTime.AddHours(-1) select x.Close).FirstOrDefault();
+                decimal last15Min = (from x in symbolHistory where x.DataTime == currentItem.DataTime.AddMinutes(-15) select x.Close).FirstOrDefault();
+                decimal oneHourTrend = 0;
+                decimal fifteenMinuteTrend = 0;
+                if (oneHour != 0)
                 {
-                    //15 minute trend is less then 1/2 the trend over the past hour. (NOSEDIVE)
-                    //look for support? 10 minute trend?
-                    _BuySellIndex += 3; //buy the dip
-                    
+                    oneHourTrend = ((currentItem.Close / oneHour) * 100);
                 }
-            }
-            else
-            {
-                //15 minutes higher momentum then the past hour (spike)
-                _BuySellIndex += -3;
+                if (last15Min != 0)
+                {
+                    fifteenMinuteTrend = ((currentItem.Close / last15Min) * 100);
+                }
+                if (oneHourTrend > fifteenMinuteTrend)
+                {
+                    //the long term trend is larger then the trend in the last 15 minutes.
+                    if (oneHourTrend / 2 > fifteenMinuteTrend)
+                    {
+                        //15 minute trend is less then 1/2 the trend over the past hour. (NOSEDIVE)
+                        //look for support? 10 minute trend?
+                        _BuySellIndex += 3; //buy the dip
 
-                if (oneHourTrend * 2 <= fifteenMinuteTrend)
+                    }
+                }
+                else
                 {
-                    _BuySellIndex += -2; //huge spike!! dump shares 
+                    //15 minutes higher momentum then the past hour (spike)
+                    _BuySellIndex += -2;
+
+                    if (oneHourTrend * 2 < fifteenMinuteTrend)
+                    {
+                        _BuySellIndex += -1; //huge spike!! dump shares 
+                    }
                 }
             }
+            catch (Exception e)
+            {
+                Console.WriteLine("momentumDipping()" + e.Message);
+            }
+           
 
         }
     }
