@@ -89,7 +89,7 @@ CREATE TABLE WALLET_HISTORY
     PortfolioNumber INTEGER CONSTRAINT FK_Walhist_Portfolio FOREIGN KEY(PortfolioNumber) REFERENCES Portfolio(PortfolioNumber) NOT NULL ,
     Balance  Decimal(15,2), 
     Symbol VARCHAR(5) CONSTRAINT FK_transact_Symbol FOREIGN KEY(Symbol) REFERENCES Stock_Item(Symbol),
-    Amount DECIMAL(10,4) CONSTRAINT CK_trans_zero CHECK(Amount > 0),
+    Amount DECIMAL(10,4) CONSTRAINT CK_trans_zero CHECK(Amount != 0),
     Direction VARCHAR(4) CONSTRAINT CK_transact_BuySell CHECK(Direction IN ('BUY', 'SELL')) 
 )
 GO

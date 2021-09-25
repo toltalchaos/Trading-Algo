@@ -60,7 +60,7 @@ namespace algo_02
                         DecisionMaker decision = new DecisionMaker();
                         decision.EvaluateSymbol(symbol);
                         //create decision range on buy or sell from index outputs    
-                        modelInterface.PurchaseStock(symbol, walletNumber, decision.GetBuySellIndex());
+                        modelInterface.StockTransaction(symbol, walletNumber, decision.GetBuySellIndex());
                         Console.ReadKey();
 
                     }

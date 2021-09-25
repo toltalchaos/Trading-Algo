@@ -315,7 +315,7 @@ namespace algo_02.LogicLayer
             }
         }
 
-        public void PurchaseStock(string symbol, int walletNumber, int buySellIndex)
+        public void StockTransaction(string symbol, int walletNumber, int buySellIndex)
         {
             //obtain wallet data
             //obtain symbol existence in portfolio - check valid symbol
@@ -393,36 +393,39 @@ namespace algo_02.LogicLayer
                     // number of shares that fit in there(ish) - may eventually throw insufficent funds
                     int numberOfShares = int.Parse(Math.Round(spendingAmount / symbolData.Close, 0).ToString());
 
-                    Console.WriteLine("debug here" + numberOfShares + "should be a valid int");
-                    Console.ReadKey();
+                    if(numberOfShares > 0)
+                        {
+                            Console.WriteLine("debug here" + numberOfShares + "should be a valid int");
 
-                    portfolioItem.SalePrice = (numberOfShares * symbolData.Close) * -1;
-                    portfolioItem.AmountOwned = numberOfShares;
+                            portfolioItem.SalePrice = (numberOfShares * symbolData.Close) * -1;
+                            portfolioItem.AmountOwned = numberOfShares;
+                            context.Entry(portfolioItem).State = System.Data.Entity.EntityState.Modified;
+                        }
 
-                    context.Portfolios.Add(portfolioItem);
+
+                    }
+                    else
+                    {
+                        decimal spendingAmount = Math.Round(wallet.CurrentBalance * percentOfWallet, 2);
+                        int numberOfShares = int.Parse(Math.Round(spendingAmount / symbolData.Close, 0).ToString());
+
+                        Console.WriteLine("debug here" + numberOfShares + "should be a valid int (existing)");
+                        if (numberOfShares > 0)
+                        {
+                            portfolioItem.SalePrice = (numberOfShares * symbolData.Close) * -1;
+                            portfolioItem.AmountOwned = portfolioItem.AmountOwned + numberOfShares;
+                            context.Entry(portfolioItem).State = System.Data.Entity.EntityState.Modified;
+                        }
 
 
-                    
-                }
-                else
-                {
-                    decimal spendingAmount = Math.Round(wallet.CurrentBalance * percentOfWallet, 2);
-                    int numberOfShares = int.Parse(Math.Round(spendingAmount / symbolData.Close, 0).ToString());
-
-                    Console.WriteLine("debug here" + numberOfShares + "should be a valid int (existing)");
-                    Console.ReadKey();
-
-                    portfolioItem.SalePrice = (numberOfShares * symbolData.Close) * -1;
-                    portfolioItem.AmountOwned = numberOfShares;
-                    context.Entry(portfolioItem).State = System.Data.Entity.EntityState.Modified;
-                }
+                    }
                     try
                     {
                         context.SaveChanges();
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine("error -  may be insufficent funds" + e.Message + e.InnerException);
+                        Console.WriteLine("error -  may be insufficent funds " + e.Message + e.InnerException);
                     }
                 
                 }
@@ -512,7 +515,7 @@ namespace algo_02.LogicLayer
                                                                         }).FirstOrDefault();
                 if (returnThis != null)
                 {
-                Console.WriteLine(returnThis.DataTime.ToString());
+                //Console.WriteLine(returnThis.DataTime.ToString());
                 }    
                 
                 return returnThis;
