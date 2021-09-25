@@ -52,7 +52,7 @@ Create TABLE Portfolio
 (
     PortfolioNumber INTEGER CONSTRAINT PK_Portfolio PRIMARY KEY IDENTITY(1,1) NOT NULL ,
     Symbol VARCHAR(5) CONSTRAINT FK_port_Symbol FOREIGN KEY(Symbol) REFERENCES Stock_Item(Symbol) ,
-    SalePrice DECIMAL(10,4) CONSTRAINT CK_PurPrice CHECK(SalePrice > 0),
+    SalePrice DECIMAL(10,4),
     AmountOwned INTEGER CONSTRAINT CK_Portfolio_AmtOwned CHECK(AmountOwned >= 0),
 )
 GO 

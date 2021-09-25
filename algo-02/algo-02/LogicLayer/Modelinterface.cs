@@ -333,7 +333,7 @@ namespace algo_02.LogicLayer
                         if (buySellIndex >= 5)
                         {
                             //buy
-                            buySellIndex += -7;
+                            buySellIndex += -4;
                             decimal percentToBuy = buySellIndex / 10m;
                             Console.WriteLine("BUY " + symbol);
 
@@ -384,32 +384,35 @@ namespace algo_02.LogicLayer
 
                 if (portfolioItem == null)
                 {
+                    portfolioItem = (from x in context.Portfolios where x.PortfolioNumber == wallet.PortfolioNumber select x).First();
                     //no portfolio item found - file new
                     portfolioItem.PortfolioNumber = wallet.PortfolioNumber;
                     portfolioItem.Symbol = symbol;
                     // get % of walet balance willing to spend
-                    decimal spendingAmount = Math.Round(wallet.CurrentBalance / percentOfWallet, 2);
+                    decimal spendingAmount = Math.Round(wallet.CurrentBalance * percentOfWallet, 2);
                     // number of shares that fit in there(ish) - may eventually throw insufficent funds
-                    int numberOfShares = int.Parse(Math.Round(spendingAmount * symbolData.Close, 0).ToString());
+                    int numberOfShares = int.Parse(Math.Round(spendingAmount / symbolData.Close, 0).ToString());
 
                     Console.WriteLine("debug here" + numberOfShares + "should be a valid int");
                     Console.ReadKey();
 
-                    portfolioItem.SalePrice = numberOfShares * symbolData.Close;
+                    portfolioItem.SalePrice = (numberOfShares * symbolData.Close) * -1;
                     portfolioItem.AmountOwned = numberOfShares;
 
                     context.Portfolios.Add(portfolioItem);
+
+
                     
                 }
                 else
                 {
-                    decimal spendingAmount = Math.Round(wallet.CurrentBalance / percentOfWallet, 2);
-                    int numberOfShares = int.Parse(Math.Round(spendingAmount * symbolData.Close, 0).ToString());
+                    decimal spendingAmount = Math.Round(wallet.CurrentBalance * percentOfWallet, 2);
+                    int numberOfShares = int.Parse(Math.Round(spendingAmount / symbolData.Close, 0).ToString());
 
                     Console.WriteLine("debug here" + numberOfShares + "should be a valid int (existing)");
                     Console.ReadKey();
 
-                    portfolioItem.SalePrice = numberOfShares * symbolData.Close;
+                    portfolioItem.SalePrice = (numberOfShares * symbolData.Close) * -1;
                     portfolioItem.AmountOwned = numberOfShares;
                     context.Entry(portfolioItem).State = System.Data.Entity.EntityState.Modified;
                 }
