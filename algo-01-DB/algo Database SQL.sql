@@ -50,7 +50,7 @@ GO
 
 Create TABLE Portfolio
 (
-    PortfolioNumber INTEGER CONSTRAINT PK_Portfolio PRIMARY KEY IDENTITY(1,1) NOT NULL ,
+    PortfolioNumber INTEGER CONSTRAINT PK_Portfolio PRIMARY KEY NOT NULL ,
     Symbol VARCHAR(5) CONSTRAINT FK_port_Symbol FOREIGN KEY(Symbol) REFERENCES Stock_Item(Symbol) ,
     SalePrice DECIMAL(10,4),
     AmountOwned INTEGER CONSTRAINT CK_Portfolio_AmtOwned CHECK(AmountOwned >= 0),
@@ -167,13 +167,15 @@ ON Portfolio
 FOR Insert, Update 
 AS
 DECLARE @upd_Direction VARCHAR(5)
+DECLARE @CurrentBalance_var  Decimal(15,2)
+BEGIN
     IF (select SalePrice from inserted) > 0
         SET @upd_Direction = 'SELL'
     ELSE
         SET @upd_Direction = 'BUY'
-DECLARE @CurrentBalance_var  Decimal(15,2)
-        SET @CurrentBalance_var = (select CurrentBalance from Wallet where PortfolioNumber = (select PortfolioNumber from inserted) )
 
+        SET @CurrentBalance_var = (select CurrentBalance from Wallet where PortfolioNumber = (select PortfolioNumber from inserted) )
+END
     IF @@ROWCOUNT > 0 
     BEGIN
         INSERT INTO WALLET_HISTORY(PortfolioNumber, Balance, Symbol, Amount, Direction)

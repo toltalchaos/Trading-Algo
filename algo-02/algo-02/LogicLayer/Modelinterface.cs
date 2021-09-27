@@ -67,10 +67,12 @@ namespace algo_02.LogicLayer
                 try
                 {
                     Portfolio newPort = new Portfolio();
+                    newPort.PortfolioNumber = 1;
 
                     context.Portfolios.Add(newPort);
 
                     Wallet newWallet = new Wallet();
+                    newWallet.WalletNumber = 10;
                     newWallet.PortfolioNumber = newPort.PortfolioNumber;
                     newWallet.CurrentBalance = decimal.Parse(startupamount.ToString());
                     context.Wallets.Add(newWallet);
@@ -399,7 +401,7 @@ namespace algo_02.LogicLayer
 
                             portfolioItem.SalePrice = (numberOfShares * symbolData.Close) * -1;
                             portfolioItem.AmountOwned = numberOfShares;
-                            context.Entry(portfolioItem).State = System.Data.Entity.EntityState.Modified;
+                            context.Portfolios.Add(portfolioItem);
                         }
 
 
@@ -453,10 +455,9 @@ namespace algo_02.LogicLayer
                         int numberOfShares = int.Parse(Math.Round((decimal.Parse(portfolioItem.AmountOwned.ToString())) * (percentOfOwned/100), 0).ToString());
 
                         Console.WriteLine("debug here" + numberOfShares + "should be a valid int (existing)");
-                        Console.ReadKey();
 
                         portfolioItem.SalePrice = -numberOfShares * symbolData.Close;
-                        portfolioItem.AmountOwned = -numberOfShares;
+                        portfolioItem.AmountOwned = portfolioItem.AmountOwned -numberOfShares;
                         context.Entry(portfolioItem).State = System.Data.Entity.EntityState.Modified;
                     }
                     try
