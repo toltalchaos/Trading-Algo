@@ -288,7 +288,7 @@ namespace algo_02.LogicLayer
                                 // add times to history data under this symbol
                                 List<DateTime> existingtimepoints = (from x in context.SYMBOL_HISTORY where x.Symbol == symbol select x.DataTime).ToList();
                                 List<JToken> incomingtimepoints = symbolObject.Last.First.Children().ToList();
-                                List<JToken> outgoingTimePoints = new List<JToken>();
+                                List<SYMBOL_HISTORY> outgoingTimePoints = new List<SYMBOL_HISTORY>();
                                 //create new outgoing to DB list
                                 foreach (var incomingTimePoint in incomingtimepoints)
                                 {
@@ -299,21 +299,24 @@ namespace algo_02.LogicLayer
                                     }
                                     else
                                     {
-                                        outgoingTimePoints.Add(incomingTime);
+                                        //need to create history object here then add object to array to be added to db
+                                        SYMBOL_HISTORY historyDataPoint = new SYMBOL_HISTORY();
+                                        historyDataPoint.Symbol = symbol;
+                                        historyDataPoint.Open = decimal.Parse(incomingTimePoint.First["1. open"].ToString());
+                                        historyDataPoint.High = decimal.Parse(incomingTimePoint.First["2. high"].ToString());
+                                        historyDataPoint.Low = decimal.Parse(incomingTimePoint.First["3. low"].ToString());
+                                        historyDataPoint.Close = decimal.Parse(incomingTimePoint.First["4. close"].ToString());
+                                        historyDataPoint.Volume = int.Parse(incomingTimePoint.First["5. volume"].ToString());
+                                        historyDataPoint.DataTime = DateTime.Parse(incomingTimePoint.ToString().Split('"')[1].Trim('"'));
+                                        outgoingTimePoints.Add(historyDataPoint);
+
                                     }
                                 }
                                 //iterate through outgoing times to add to DB
                                 foreach (var timePoint in outgoingTimePoints)
                                 {
-                                    SYMBOL_HISTORY historyDataPoint = new SYMBOL_HISTORY();
-                                    historyDataPoint.Symbol = symbol;
-                                    historyDataPoint.Open = decimal.Parse(timePoint.First["1. open"].ToString());
-                                    historyDataPoint.High = decimal.Parse(timePoint.First["2. high"].ToString());
-                                    historyDataPoint.Low = decimal.Parse(timePoint.First["3. low"].ToString());
-                                    historyDataPoint.Close = decimal.Parse(timePoint.First["4. close"].ToString());
-                                    historyDataPoint.Volume = int.Parse(timePoint.First["5. volume"].ToString());
-                                    historyDataPoint.DataTime = DateTime.Parse(timePoint.ToString().Split('"')[1].Trim('"'));
-                                    context.SYMBOL_HISTORY.Add(historyDataPoint);
+                                    
+                                    context.SYMBOL_HISTORY.Add(timePoint);
                                     Console.WriteLine("added new historical data to evaluate");
                                 }
                             }
@@ -323,7 +326,7 @@ namespace algo_02.LogicLayer
                         catch (Exception e)
                         {
 
-                            Console.WriteLine("(UpdateTickers)there was a problem " + e.Message + e.InnerException);
+                            Console.WriteLine("(UpdateTickers)there was a problem " + e.InnerException);
                             Console.ReadKey();
                         }
                     }
@@ -404,10 +407,11 @@ namespace algo_02.LogicLayer
                 if (portfolioItem == null)
                 {
                     portfolioItem = new Portfolio();
-                        context.Portfolios.Add(portfolioItem);
-                        context.SaveChanges();
                         //no portfolio item found - file new                    
                         portfolioItem.Symbol = symbol;
+                        portfolioItem.SalePrice = 0;
+                        context.Portfolios.Add(portfolioItem);
+                        context.SaveChanges();
                     // get % of walet balance willing to spend
                     decimal spendingAmount = Math.Round((decimal)wallet.CurrentBalance * percentOfWallet, 2);
                     // number of shares that fit in there(ish) - may eventually throw insufficent funds
@@ -447,6 +451,7 @@ namespace algo_02.LogicLayer
                     {
 
                         context.SaveChanges();
+                        Console.WriteLine("successful purchase of " + symbol);
 
 
                     }
