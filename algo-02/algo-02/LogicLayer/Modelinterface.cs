@@ -15,7 +15,7 @@ namespace algo_02.LogicLayer
         #region init methods
         public void NUKEDATABASE()
         {
-            using (var context = new DatabaseContext())
+            using (var context = new AlgoDBContext())
             {
                 //select table by table in order of dependant to non dependant and nuke all data
 
@@ -79,7 +79,7 @@ namespace algo_02.LogicLayer
         public int CreateNewWallet(int startupamount)
         {
 
-            using (var context = new DatabaseContext())
+            using (var context = new AlgoDBContext())
             {
                 try
                 {
@@ -110,7 +110,7 @@ namespace algo_02.LogicLayer
         public void AddSymbolToWatchList(List<string> symbols)
         {
             //crack open DB context
-            using (var context = new DatabaseContext())
+            using (var context = new AlgoDBContext())
             {
                 try
                 {
@@ -206,7 +206,7 @@ namespace algo_02.LogicLayer
         }
         private void AddStockItemHistoryPointToDB(SYMBOL_HISTORY itemToAdd)
         {
-            using(var context = new DatabaseContext())
+            using(var context = new AlgoDBContext())
             {
                 context.SYMBOL_HISTORY.Add(itemToAdd);
                 context.SaveChanges();
@@ -216,7 +216,7 @@ namespace algo_02.LogicLayer
         {
             try
             {
-                using (var context = new DatabaseContext())
+                using (var context = new AlgoDBContext())
                 {
                     context.Stock_Item.Add(itemtoadd);
                     context.SaveChanges();
@@ -235,7 +235,7 @@ namespace algo_02.LogicLayer
         #endregion
         public void UpdateTickers(List<string> symbolData)
         {
-            using (var context = new DatabaseContext())
+            using (var context = new AlgoDBContext())
             {
                 //get symbols list
                 List<string> symbols = (from x in context.WatchLists select x.symbol).ToList();
@@ -340,7 +340,7 @@ namespace algo_02.LogicLayer
             // use buysell index to come up with % of portfolio to spend on stock - error handle
             try
             {
-                using (var context = new DatabaseContext())
+                using (var context = new AlgoDBContext())
                 {
                     Wallet wallet = (from x in context.Wallets where x.WalletNumber == walletNumber select x).FirstOrDefault();
                     
@@ -392,7 +392,7 @@ namespace algo_02.LogicLayer
 
         private void BuyStock(decimal percentOfWallet, string symbol, Wallet wallet)
         {
-            using(var context = new DatabaseContext())
+            using(var context = new AlgoDBContext())
             {
                 decimal saleprice = 0;
                 Portfolio portfolioItem = (from x in context.Portfolios where x.Symbol == symbol select x).FirstOrDefault();
@@ -462,7 +462,7 @@ namespace algo_02.LogicLayer
         }
         private void SellStock(decimal percentOfOwned, string symbol, Wallet wallet)
         {
-            using (var context = new DatabaseContext())
+            using (var context = new AlgoDBContext())
             {
                 Portfolio portfolioItem = (from x in context.Portfolios where x.Symbol == symbol select x).FirstOrDefault();
                 Stock_Item symbolData = (from x in context.Stock_Item where x.Symbol == symbol select x).FirstOrDefault();
@@ -501,7 +501,7 @@ namespace algo_02.LogicLayer
         #region get data
         public bool Get_SymbolExistence(string symbol)
         {
-            using(var context = new DatabaseContext())
+            using(var context = new AlgoDBContext())
             {
                 string existingSymbol = (from x in context.WatchLists where x.symbol == symbol select x).FirstOrDefault().ToString();
                 if (existingSymbol != null)
@@ -516,15 +516,15 @@ namespace algo_02.LogicLayer
         }
         public DateTime Get_SymbolDateTime(string symbol)
         {
-            using (var context = new DatabaseContext())
+            using (var context = new AlgoDBContext())
             {
                 Stock_Item thisStockItem = (from x in context.Stock_Item where x.Symbol == symbol select x).ToList().First();
-                return thisStockItem.DataTime;
+                return (DateTime)thisStockItem.DataTime;
             }
         }
         public SymbolObject Get_SymbolObject_ByDate(DateTime thisDateTime, string symbol)
         {
-            using(var context = new DatabaseContext())
+            using(var context = new AlgoDBContext())
             {
 
                 SymbolObject returnThis = (from x in context.SYMBOL_HISTORY 
@@ -549,14 +549,14 @@ namespace algo_02.LogicLayer
         }
         public List<SYMBOL_HISTORY> Get_SymbolHistory(string symbol)
         {
-            using (var context = new DatabaseContext())
+            using (var context = new AlgoDBContext())
             {
                 return (from x in context.SYMBOL_HISTORY where x.Symbol == symbol select x).OrderBy(y => y.DataTime).ToList();
             }
         }
         public Stock_Item Get_StockItem(string symbol)
         {
-            using (var context = new DatabaseContext())
+            using (var context = new AlgoDBContext())
             {
                 return (from x in context.Stock_Item where x.Symbol == symbol select x).First();
             }

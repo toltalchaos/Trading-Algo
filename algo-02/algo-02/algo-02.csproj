@@ -86,7 +86,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Entities\DatabaseContext.cs" />
+    <Compile Include="Entities\AlgoDBContext.cs" />
     <Compile Include="Entities\Portfolio.cs" />
     <Compile Include="Entities\Stock_Item.cs" />
     <Compile Include="Entities\SYMBOL_HISTORY.cs" />

@@ -124,7 +124,7 @@ namespace algo_02.LogicLayer
                 //get historical data 
                 List<SYMBOL_HISTORY> symbolHistory = modelinterface.Get_SymbolHistory(symbol);
                 Stock_Item currentItem = modelinterface.Get_StockItem(symbol);
-                SymbolObject pastItem = modelinterface.Get_SymbolObject_ByDate(currentItem.DataTime, currentItem.Symbol);
+                SymbolObject pastItem = modelinterface.Get_SymbolObject_ByDate((DateTime)currentItem.DataTime, currentItem.Symbol);
                 //get % values % = (currentItem.Close / pastItem) X 100
                 //      all time
                 if (((currentItem.Close / pastItem.Close) * 100) > 1)

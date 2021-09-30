@@ -5,10 +5,10 @@ using System.Linq;
 
 namespace algo_02.Entities
 {
-    public partial class DatabaseContext : DbContext
+    public partial class AlgoDBContext : DbContext
     {
-        public DatabaseContext()
-            : base("name=DatabaseContext")
+        public AlgoDBContext()
+            : base("name=AlgoDBContext")
         {
         }
 
