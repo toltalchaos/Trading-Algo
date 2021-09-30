@@ -29,6 +29,11 @@ namespace algo_02.Entities
                 .Property(e => e.SalePrice)
                 .HasPrecision(10, 4);
 
+            modelBuilder.Entity<Portfolio>()
+                .HasMany(e => e.WALLET_HISTORY)
+                .WithRequired(e => e.Portfolio)
+                .WillCascadeOnDelete(false);
+
             modelBuilder.Entity<Stock_Item>()
                 .Property(e => e.Symbol)
                 .IsUnicode(false);
