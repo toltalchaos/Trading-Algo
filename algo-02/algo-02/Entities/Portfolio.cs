@@ -17,7 +17,7 @@ namespace algo_02.Entities
         }
 
         [Key]
-        public int PortfolioNumber { get; set; }
+        public int PortfolioLineNumber { get; set; }
 
         [StringLength(5)]
         public string Symbol { get; set; }

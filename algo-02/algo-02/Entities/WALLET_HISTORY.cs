@@ -11,7 +11,7 @@ namespace algo_02.Entities
         [Key]
         public int transactionNumber { get; set; }
 
-        public int? PortfolioNumber { get; set; }
+        public int? PortfolioLineNumber { get; set; }
 
         public decimal? Balance { get; set; }
 

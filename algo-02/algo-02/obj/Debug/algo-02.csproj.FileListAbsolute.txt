@@ -36,4 +36,3 @@ E:\work\Trading-Algo\algo-02\algo-02\bin\Debug\System.Text.Encodings.Web.xml
 E:\work\Trading-Algo\algo-02\algo-02\bin\Debug\System.Text.Json.xml
 E:\work\Trading-Algo\algo-02\algo-02\bin\Debug\System.Threading.Tasks.Extensions.xml
 E:\work\Trading-Algo\algo-02\algo-02\bin\Debug\System.ValueTuple.xml
-E:\work\Trading-Algo\algo-02\algo-02\obj\Debug\algo-02.csproj.AssemblyReference.cache

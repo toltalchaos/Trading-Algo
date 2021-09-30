@@ -49,18 +49,18 @@ CREATE TABLE Stock_Item
 GO 
 
 Create TABLE Portfolio
-(
-    PortfolioNumber INTEGER CONSTRAINT PK_Portfolio PRIMARY KEY NOT NULL ,
+( 
+    PortfolioLineNumber INTEGER CONSTRAINT PK_PortfolioLineNumber PRIMARY KEY IDENTITY(1,1),
     Symbol VARCHAR(5) CONSTRAINT FK_port_Symbol FOREIGN KEY(Symbol) REFERENCES Stock_Item(Symbol) ,
     SalePrice DECIMAL(10,4),
     AmountOwned INTEGER CONSTRAINT CK_Portfolio_AmtOwned CHECK(AmountOwned >= 0),
+
 )
 GO 
 
 CREATE TABLE Wallet
 (
-    WalletNumber INTEGER CONSTRAINT PK_Wallet PRIMARY KEY IDENTITY(1,1) NOT NULL ,
-    PortfolioNumber INTEGER CONSTRAINT FK_Portfolio FOREIGN KEY(PortfolioNumber) REFERENCES Portfolio(PortfolioNumber) NOT NULL ,
+    WalletNumber INTEGER CONSTRAINT PK_Wallet PRIMARY KEY NOT NULL ,
     CurrentBalance Decimal(15,2) CONSTRAINT CK_Wallet_Balance CHECK(CurrentBalance > 0) NOT NULL ,
     LastTransactionDirection VARCHAR(4) CONSTRAINT CK_wallet_BuySell CHECK(LastTransactionDirection IN ('BUY', 'SELL'))
 
@@ -86,7 +86,7 @@ GO
 CREATE TABLE WALLET_HISTORY
 (
     transactionNumber INTEGER CONSTRAINT PK_Transaction PRIMARY KEY IDENTITY(1,1) NOT NULL ,
-    PortfolioNumber INTEGER CONSTRAINT FK_Walhist_Portfolio FOREIGN KEY(PortfolioNumber) REFERENCES Portfolio(PortfolioNumber) NOT NULL ,
+    PortfolioLineNumber INTEGER CONSTRAINT FK_Walhist_Portfolio FOREIGN KEY(PortfolioLineNumber) REFERENCES Portfolio(PortfolioLineNumber) NOT NULL ,
     Balance  Decimal(15,2), 
     Symbol VARCHAR(5) CONSTRAINT FK_transact_Symbol FOREIGN KEY(Symbol) REFERENCES Stock_Item(Symbol),
     Amount DECIMAL(10,4) CONSTRAINT CK_trans_zero CHECK(Amount != 0),
@@ -108,7 +108,7 @@ GO
 -- VALUES ('XXX', 420.69, 15),
 --         ('YYY', 420.69, 0)
 
--- INSERT INTO Wallet(PortfolioNumber, CurrentBalance)
+-- INSERT INTO Wallet(PortfolioLineNumber, CurrentBalance)
 -- VALUES (1, 420420)
 
 -- create triggers to maintain DB
@@ -169,27 +169,28 @@ AS
 DECLARE @upd_Direction VARCHAR(5)
 DECLARE @CurrentBalance_var  Decimal(15,2)
 BEGIN
+        SET @CurrentBalance_var = (select CurrentBalance from Wallet where WalletNumber = 10)
     IF (select SalePrice from inserted) > 0
         SET @upd_Direction = 'SELL'
     ELSE
+    BEGIN
         SET @upd_Direction = 'BUY'
-
-        SET @CurrentBalance_var = (select CurrentBalance from Wallet where PortfolioNumber = (select PortfolioNumber from inserted) )
+    END
 END
     IF @@ROWCOUNT > 0 
     BEGIN
-        INSERT INTO WALLET_HISTORY(PortfolioNumber, Balance, Symbol, Amount, Direction)
-        SELECT I.PortfolioNumber, (select CurrentBalance + I.SalePrice from Wallet where PortfolioNumber = I.PortfolioNumber ),
+        INSERT INTO WALLET_HISTORY(PortfolioLineNumber, Balance, Symbol, Amount, Direction)
+        SELECT I.PortfolioLineNumber, (select CurrentBalance + I.SalePrice from Wallet),
                 I.Symbol, I.SalePrice, @upd_Direction
         FROM inserted I
 
         
         UPDATE Wallet
         SET CurrentBalance = (@CurrentBalance_var + (select SalePrice from inserted)), LastTransactionDirection = @upd_Direction
-        WHERE PortfolioNumber = (select PortfolioNumber from inserted)
+        where WalletNumber = 10
 
         --check the balance of the wallet is > 0 
-        IF (select CurrentBalance from Wallet where PortfolioNumber = (select PortfolioNumber from inserted)) < 0
+        IF (select CurrentBalance from Wallet) < 0
         BEGIN
             RAISERROR('insufficent funds', 16,1)
             ROLLBACK TRANSACTION
@@ -205,6 +206,18 @@ END
 RETURN
 GO
 
+insert into Wallet(WalletNumber, CurrentBalance)
+VALUES(10, 500)
+
+insert into Stock_Item(Symbol, [Open], High, Low, [Close], Volume, DataTime)
+VALUES ('XXX', 420.69, 555.00, 69.00, 410.69, 1234, GETDATE())
+
+UPDATE Wallet
+set CurrentBalance = 500
+where WalletNumber = 10
+
+insert into Portfolio(Symbol, SalePrice,AmountOwned)
+VALUES('XXX', 123, 2)
 
 -- create procs/trigs 
     --add purchase

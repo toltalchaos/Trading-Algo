@@ -67,18 +67,17 @@ namespace algo_02.LogicLayer
                 try
                 {
                     Portfolio newPort = new Portfolio();
-                    newPort.PortfolioNumber = 1;
+                    newPort.PortfolioLineNumber = 100;
 
                     context.Portfolios.Add(newPort);
-
+                    context.SaveChanges();
                     Wallet newWallet = new Wallet();
                     newWallet.WalletNumber = 10;
-                    newWallet.PortfolioNumber = newPort.PortfolioNumber;
                     newWallet.CurrentBalance = decimal.Parse(startupamount.ToString());
                     context.Wallets.Add(newWallet);
 
                     context.SaveChanges();
-                    return (from x in context.Wallets where x.PortfolioNumber == newPort.PortfolioNumber select x.WalletNumber).FirstOrDefault();
+                    return (from x in context.Wallets select x.WalletNumber).FirstOrDefault();
 
                 }
                 catch (Exception e)
@@ -369,7 +368,7 @@ namespace algo_02.LogicLayer
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(e.InnerException);
             }
             
         }
@@ -378,7 +377,8 @@ namespace algo_02.LogicLayer
         {
             using(var context = new DatabaseContext())
             {
-                Portfolio portfolioItem = (from x in context.Portfolios where x.PortfolioNumber == wallet.PortfolioNumber && x.Symbol == symbol select x).FirstOrDefault();
+                decimal saleprice = 0;
+                Portfolio portfolioItem = (from x in context.Portfolios where x.Symbol == symbol select x).FirstOrDefault();
                 Stock_Item symbolData = (from x in context.Stock_Item where x.Symbol == symbol select x).FirstOrDefault();
                 //check can afford minimum of 1 share
                 if (wallet.CurrentBalance > symbolData.Close)
@@ -386,44 +386,52 @@ namespace algo_02.LogicLayer
 
                 if (portfolioItem == null)
                 {
-                    portfolioItem = (from x in context.Portfolios where x.PortfolioNumber == wallet.PortfolioNumber select x).First();
-                    //no portfolio item found - file new
-                    portfolioItem.PortfolioNumber = wallet.PortfolioNumber;
-                    portfolioItem.Symbol = symbol;
+                    portfolioItem = new Portfolio();
+                        context.Portfolios.Add(portfolioItem);
+                        context.SaveChanges();
+                        //no portfolio item found - file new                    
+                        portfolioItem.Symbol = symbol;
                     // get % of walet balance willing to spend
-                    decimal spendingAmount = Math.Round(wallet.CurrentBalance * percentOfWallet, 2);
+                    decimal spendingAmount = Math.Round((decimal)wallet.CurrentBalance * percentOfWallet, 2);
                     // number of shares that fit in there(ish) - may eventually throw insufficent funds
                     int numberOfShares = int.Parse(Math.Round(spendingAmount / symbolData.Close, 0).ToString());
 
                     if(numberOfShares > 0)
                         {
-                            Console.WriteLine("debug here" + numberOfShares + "should be a valid int");
+                            Console.WriteLine("debug here " + numberOfShares + " should be a valid int");
 
                             portfolioItem.SalePrice = (numberOfShares * symbolData.Close) * -1;
+                            saleprice = (decimal)portfolioItem.SalePrice;
                             portfolioItem.AmountOwned = numberOfShares;
-                            context.Portfolios.Add(portfolioItem);
+                            context.Entry(portfolioItem).State = System.Data.Entity.EntityState.Modified;
                         }
 
 
                     }
                     else
                     {
-                        decimal spendingAmount = Math.Round(wallet.CurrentBalance * percentOfWallet, 2);
+                        decimal spendingAmount = Math.Round((decimal)wallet.CurrentBalance * percentOfWallet, 2);
                         int numberOfShares = int.Parse(Math.Round(spendingAmount / symbolData.Close, 0).ToString());
 
-                        Console.WriteLine("debug here" + numberOfShares + "should be a valid int (existing)");
+                        Console.WriteLine("debug here " + numberOfShares + " should be a valid int (existing)");
                         if (numberOfShares > 0)
                         {
                             portfolioItem.SalePrice = (numberOfShares * symbolData.Close) * -1;
+                            saleprice = (decimal)portfolioItem.SalePrice;
                             portfolioItem.AmountOwned = portfolioItem.AmountOwned + numberOfShares;
                             context.Entry(portfolioItem).State = System.Data.Entity.EntityState.Modified;
+                            
+
                         }
 
 
                     }
                     try
                     {
+
                         context.SaveChanges();
+
+
                     }
                     catch (Exception e)
                     {
@@ -439,7 +447,7 @@ namespace algo_02.LogicLayer
         {
             using (var context = new DatabaseContext())
             {
-                Portfolio portfolioItem = (from x in context.Portfolios where x.PortfolioNumber == wallet.PortfolioNumber && x.Symbol == symbol select x).FirstOrDefault();
+                Portfolio portfolioItem = (from x in context.Portfolios where x.Symbol == symbol select x).FirstOrDefault();
                 Stock_Item symbolData = (from x in context.Stock_Item where x.Symbol == symbol select x).FirstOrDefault();
                 //check can afford minimum of 1 share
                 if (wallet.CurrentBalance > symbolData.Close)
