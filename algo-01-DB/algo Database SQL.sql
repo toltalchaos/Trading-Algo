@@ -206,18 +206,18 @@ END
 RETURN
 GO
 
-insert into Wallet(WalletNumber, CurrentBalance)
-VALUES(10, 500)
+-- insert into Wallet(WalletNumber, CurrentBalance)
+-- VALUES(10, 500)
 
-insert into Stock_Item(Symbol, [Open], High, Low, [Close], Volume, DataTime)
-VALUES ('XXX', 420.69, 555.00, 69.00, 410.69, 1234, GETDATE())
+-- insert into Stock_Item(Symbol, [Open], High, Low, [Close], Volume, DataTime)
+-- VALUES ('XXX', 420.69, 555.00, 69.00, 410.69, 1234, GETDATE())
 
-UPDATE Wallet
-set CurrentBalance = 500
-where WalletNumber = 10
+-- UPDATE Wallet
+-- set CurrentBalance = 500
+-- where WalletNumber = 10
 
-insert into Portfolio(Symbol, SalePrice,AmountOwned)
-VALUES('XXX', 123, 2)
+-- insert into Portfolio(Symbol, SalePrice,AmountOwned)
+-- VALUES('XXX', 123, 2)
 
 -- create procs/trigs 
     --add purchase
