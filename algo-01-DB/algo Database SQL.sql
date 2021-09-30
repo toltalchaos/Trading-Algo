@@ -119,7 +119,7 @@ GO
 
 CREATE TRIGGER Portfolio_Update_Removezerown
 ON Portfolio
-FOR Insert, Update 
+FOR Update 
 AS
     IF EXISTS(SELECT Symbol from Portfolio WHERE AmountOwned = 0)
         DELETE from Portfolio 
@@ -138,7 +138,7 @@ GO
 
 CREATE TRIGGER StockItem_Update_LogAuditTrail
 ON Stock_Item
-FOR Insert, Update 
+FOR Update 
 AS
     IF @@ROWCOUNT > 0 
     BEGIN
@@ -164,7 +164,7 @@ GO
 
 CREATE TRIGGER Wallet_Update_LogAuditTrail
 ON Portfolio
-FOR Insert, Update 
+FOR Update 
 AS
 DECLARE @upd_Direction VARCHAR(5)
 DECLARE @CurrentBalance_var  Decimal(15,2)
