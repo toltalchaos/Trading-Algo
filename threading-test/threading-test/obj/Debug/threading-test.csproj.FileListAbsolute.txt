@@ -1,0 +1,7 @@
+E:\work\Trading-Algo\threading-test\threading-test\bin\Debug\threading-test.exe.config
+E:\work\Trading-Algo\threading-test\threading-test\bin\Debug\threading-test.exe
+E:\work\Trading-Algo\threading-test\threading-test\bin\Debug\threading-test.pdb
+E:\work\Trading-Algo\threading-test\threading-test\obj\Debug\threading-test.csproj.AssemblyReference.cache
+E:\work\Trading-Algo\threading-test\threading-test\obj\Debug\threading-test.csproj.CoreCompileInputs.cache
+E:\work\Trading-Algo\threading-test\threading-test\obj\Debug\threading-test.exe
+E:\work\Trading-Algo\threading-test\threading-test\obj\Debug\threading-test.pdb
