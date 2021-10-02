@@ -47,33 +47,24 @@ namespace algo_02
 
             //prompt to begin algo trading
             bool killCommand = false;
+
             do
             {
                 //log data movement
-                //Thread.Sleep(300000); Calling Thread.Sleep with a value of Timeout.Infinite causes a thread to sleep until it is interrupted by another thread that calls the Thread.Interrupt method on the sleeping thread, or until it is terminated by a call to its Thread.Abort method. 
                 modelInterface.UpdateTickers(symbolhistory);
                 //analyze stock history and current position -> decision
                 foreach (var symbol in symbols)
                 {
-                    try
-                    {
                         DecisionMaker decision = new DecisionMaker();
                         decision.EvaluateSymbol(symbol);
                         //create decision range on buy or sell from index outputs    
                         modelInterface.StockTransaction(symbol, walletNumber, decision.GetBuySellIndex());
-                        Console.ReadKey();
-
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e.Message + e.InnerException);
-                    }
                 }
-                //note: need to add logic to change symbol error handle for bad return json strings!!!!
-                //UpdateSymbols(symbols, out symbolhistory);
-                //sleep -10min - may need to review updating tickers for extended times
+                Thread.Sleep(600000);
+                UpdateSymbols(symbols, out symbolhistory);
 
                 //algo trade monitoring and logic - allow for interrupt between system threads 
+                //Thread.Sleep(600000); Calling Thread.Sleep with a value of Timeout.Infinite causes a thread to sleep until it is interrupted by another thread that calls the Thread.Interrupt method on the sleeping thread, or until it is terminated by a call to its Thread.Abort method. 
 
 
             } while (!killCommand);

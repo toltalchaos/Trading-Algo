@@ -419,7 +419,7 @@ namespace algo_02.LogicLayer
 
                     if(numberOfShares > 0)
                         {
-                            Console.WriteLine("debug here " + numberOfShares + " should be a valid int");
+                            Console.WriteLine("purchasing " + numberOfShares + " shares of " + symbol);
 
                             portfolioItem.SalePrice = (numberOfShares * symbolData.Close) * -1;
                             saleprice = (decimal)portfolioItem.SalePrice;
@@ -434,11 +434,10 @@ namespace algo_02.LogicLayer
                         decimal spendingAmount = Math.Round((decimal)wallet.CurrentBalance * percentOfWallet, 2);
                         int numberOfShares = int.Parse(Math.Round(spendingAmount / symbolData.Close, 0).ToString());
 
-                        Console.WriteLine("debug here " + numberOfShares + " should be a valid int (existing)");
+                        Console.WriteLine("purchasing " + numberOfShares + " shares of " + symbol);
                         if (numberOfShares > 0)
                         {
                             portfolioItem.SalePrice = (numberOfShares * symbolData.Close) * -1;
-                            saleprice = (decimal)portfolioItem.SalePrice;
                             portfolioItem.AmountOwned = portfolioItem.AmountOwned + numberOfShares;
                             context.Entry(portfolioItem).State = System.Data.Entity.EntityState.Modified;
                             
@@ -486,9 +485,18 @@ namespace algo_02.LogicLayer
 
                         Console.WriteLine("debug here" + numberOfShares + "should be a valid int (existing)");
 
-                        portfolioItem.SalePrice = -numberOfShares * symbolData.Close;
-                        portfolioItem.AmountOwned = portfolioItem.AmountOwned -numberOfShares;
-                        context.Entry(portfolioItem).State = System.Data.Entity.EntityState.Modified;
+                        if (numberOfShares > portfolioItem.AmountOwned)
+                        {
+                            portfolioItem.SalePrice = portfolioItem.AmountOwned * symbolData.Close;
+                            portfolioItem.AmountOwned = 0;
+                        }
+                        else
+                        {
+                            portfolioItem.SalePrice = numberOfShares * symbolData.Close;
+                            portfolioItem.AmountOwned = portfolioItem.AmountOwned - numberOfShares;
+                            context.Entry(portfolioItem).State = System.Data.Entity.EntityState.Modified;
+                        }
+
                     }
                     try
                     {
