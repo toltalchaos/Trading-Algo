@@ -66,12 +66,12 @@ namespace threading_test
             }
             catch (ThreadInterruptedException)
             {
-                Console.WriteLine("no kill command entered--- interrupt");
+                Console.WriteLine("no kill command entered --- interrupt");
 
             }
             catch (ThreadAbortException)
             {
-                Console.WriteLine("no kill command entered");
+                Console.WriteLine("no kill command entered ---- abort");
                
             }
             
