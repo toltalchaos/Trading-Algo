@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -16,21 +17,23 @@ namespace threading_test
             //https://docs.microsoft.com/en-us/dotnet/standard/threading/pausing-and-resuming-threads
             Console.WriteLine("init");
             KillObject killCommand = new KillObject();
-
             //start threads
+        
             do
             {
-                var workThread = new Thread(() => WorkThread(ref killCommand));
                 var killThread = new Thread(() => KillComandThread(ref killCommand));
-                workThread.Start();
-                Console.WriteLine("loop work being done");
-                workThread.Abort();
                 killThread.Start();
-                Thread.Sleep(2000);
+                //var workThread = new Thread(() => WorkThread(ref killCommand));
+                //workThread.Start();
+                Console.WriteLine("loop work being done");
+                //workThread.Abort();
+                Thread.Sleep(5000);
+                Console.WriteLine("loop ending about to abort kill comand");
                 killThread.Abort();
             } while (!killCommand.Get_KillCommand());
 
-            
+            Console.WriteLine("program terminated");
+            Console.ReadLine();
 
         }
 
@@ -51,8 +54,27 @@ namespace threading_test
         }
         private static void KillComandThread(ref KillObject killCommand)
         {
-            Console.WriteLine("kill comand start");
-            Console.ReadLine();
+            try
+            {
+
+                Console.WriteLine("kill comand start");
+                string killcommand = Console.ReadLine();
+                if (killcommand == "kill")
+                {
+                    killCommand.Set_KillCommand(true);
+                }
+            }
+            catch (ThreadInterruptedException)
+            {
+                Console.WriteLine("no kill command entered--- interrupt");
+
+            }
+            catch (ThreadAbortException)
+            {
+                Console.WriteLine("no kill command entered");
+               
+            }
+            
 
         }
     }
