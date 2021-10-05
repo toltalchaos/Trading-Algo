@@ -5,17 +5,18 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace threading_test
+namespace algo_02.LogicLayer
 {
-    class Reader
+    class KillCommandReader
     {
+        
         private static Thread inputThread;
         private static AutoResetEvent getInput, gotInput;
         private static string input;
-
         //create new class per thread, init class to init thread.
         //timeout on WaitOne() returns true after timeout or until current thread recieves input
-        static Reader()
+        //call this class each time a new kill command needs to be checked.
+        static KillCommandReader()
         {
             getInput = new AutoResetEvent(false);
             gotInput = new AutoResetEvent(false);
@@ -45,3 +46,4 @@ namespace threading_test
         }
     }
 }
+

@@ -60,11 +60,24 @@ namespace algo_02
                         //create decision range on buy or sell from index outputs    
                         modelInterface.StockTransaction(symbol, walletNumber, decision.GetBuySellIndex());
                 }
-                Thread.Sleep(600000);
+
+                try
+                {
+                    Console.WriteLine("Please enter \"kill\" within the next 5 seconds. \n to terminate program");
+                    string input = KillCommandReader.ReadLine(5000);
+                    if (input.ToLower() == "kill")
+                    {
+                        killCommand = true;
+                    }
+                }
+                catch (TimeoutException)
+                {
+                    Console.WriteLine("timeout finished, refreshing and re-evaluating stocks");
+                }
+
                 UpdateSymbols(symbols, out symbolhistory);
 
-                //algo trade monitoring and logic - allow for interrupt between system threads 
-                //Thread.Sleep(600000); Calling Thread.Sleep with a value of Timeout.Infinite causes a thread to sleep until it is interrupted by another thread that calls the Thread.Interrupt method on the sleeping thread, or until it is terminated by a call to its Thread.Abort method. 
+                
 
 
             } while (!killCommand);
