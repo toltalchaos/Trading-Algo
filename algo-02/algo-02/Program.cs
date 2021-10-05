@@ -76,8 +76,9 @@ namespace algo_02
                 }
 
                 UpdateSymbols(symbols, out symbolhistory);
+                modelInterface.UpdateTickers(symbolhistory);
 
-                
+
 
 
             } while (!killCommand);

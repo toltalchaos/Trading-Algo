@@ -272,7 +272,8 @@ namespace algo_02.LogicLayer
                                 JToken firstTimeData = symbolObject.Last.First.First;
 
                                 Stock_Item itemToChange = (from x in context.Stock_Item where x.Symbol == symbol select x).FirstOrDefault();
-                                if (itemToChange.DataTime != DateTime.Parse(firstTimeData.ToString().Split('"')[1].Trim('"')).AddMinutes(5))
+                                //if the item to change does not = the first time ?? removed + 5 minutes .
+                                if (itemToChange.DataTime != DateTime.Parse(firstTimeData.ToString().Split('"')[1].Trim('"')))
                                 {
                                 itemToChange.Open = decimal.Parse(firstTimeData.First["1. open"].ToString());
                                 itemToChange.High = decimal.Parse(firstTimeData.First["2. high"].ToString());
@@ -292,7 +293,7 @@ namespace algo_02.LogicLayer
                                 //create new outgoing to DB list
                                 foreach (var incomingTimePoint in incomingtimepoints)
                                 {
-                                    DateTime incomingTime = DateTime.Parse(incomingTimePoint.ToString().Split('\"')[1]);
+                                    DateTime incomingTime = DateTime.Parse(incomingTimePoint.ToString().Split('"')[1]);
                                     if (existingtimepoints.Contains(incomingTime))
                                     {
                                         //Console.WriteLine("this time signature for this symbol already exists");
@@ -326,7 +327,7 @@ namespace algo_02.LogicLayer
                         catch (Exception e)
                         {
 
-                            Console.WriteLine("(UpdateTickers)there was a problem " + e.InnerException);
+                            Console.WriteLine("(UpdateTickers)there was a problem " + e.Message);
                             Console.ReadKey();
                         }
                     }

@@ -15,6 +15,7 @@ namespace threading_test
 
         //create new class per thread, init class to init thread.
         //timeout on WaitOne() returns true after timeout or until current thread recieves input
+        //call this class each time a new kill command needs to be checked.
         static Reader()
         {
             getInput = new AutoResetEvent(false);
