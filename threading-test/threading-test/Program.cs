@@ -17,19 +17,27 @@ namespace threading_test
             //https://docs.microsoft.com/en-us/dotnet/standard/threading/pausing-and-resuming-threads
             Console.WriteLine("init");
             KillObject killCommand = new KillObject();
+            Reader timeoutReader = new Reader();
             //start threads
         
             do
             {
-                var killThread = new Thread(() => KillComandThread(ref killCommand));
-                killThread.Start();
-                //var workThread = new Thread(() => WorkThread(ref killCommand));
-                //workThread.Start();
-                Console.WriteLine("loop work being done");
-                //workThread.Abort();
-                Thread.Sleep(5000);
-                Console.WriteLine("loop ending about to abort kill comand");
-                killThread.Abort();
+
+                try
+                {
+                    Console.WriteLine("Please enter \"kill\" within the next 5 seconds. \n to terminate program");
+                    string input = Reader.ReadLine(5000);
+                    if (input.ToLower() == "kill")
+                    {
+                        killCommand.Set_KillCommand(true);
+                    }
+                }
+                catch (TimeoutException)
+                {
+                    Console.WriteLine("Sorry, you waited too long.");
+                }
+
+
             } while (!killCommand.Get_KillCommand());
 
             Console.WriteLine("program terminated");
@@ -37,45 +45,6 @@ namespace threading_test
 
         }
 
-        private static void WorkThread(ref KillObject killCommand)
-        {
-            try
-            {
-                Console.WriteLine("work being done");
-                
-            }
-            catch (ThreadAbortException)
-            {
-                Console.WriteLine("work thread stopped");
-               
-            }  
-                
-
-        }
-        private static void KillComandThread(ref KillObject killCommand)
-        {
-            try
-            {
-
-                Console.WriteLine("kill comand start");
-                string killcommand = Console.ReadLine();
-                if (killcommand == "kill")
-                {
-                    killCommand.Set_KillCommand(true);
-                }
-            }
-            catch (ThreadInterruptedException)
-            {
-                Console.WriteLine("no kill command entered --- interrupt");
-
-            }
-            catch (ThreadAbortException)
-            {
-                Console.WriteLine("no kill command entered ---- abort");
-               
-            }
-            
-
-        }
+      
     }
 }
