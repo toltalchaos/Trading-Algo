@@ -13,6 +13,8 @@ namespace algo_02.Entities
 
         public int PortfolioLineNumber { get; set; }
 
+        public int Shares { get; set; }
+
         public decimal? Balance { get; set; }
 
         [StringLength(5)]

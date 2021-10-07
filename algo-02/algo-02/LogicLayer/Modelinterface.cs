@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using algo_02.EntityModels;
+using System.Threading;
 
 namespace algo_02.LogicLayer
 {
@@ -242,6 +243,7 @@ namespace algo_02.LogicLayer
 
                 foreach (var symbol in symbols)
                 {
+                    
                     #region database trigger handles - code left
                     //move current data from the item to the stock item to the item history
                     //create new history entry
@@ -266,6 +268,15 @@ namespace algo_02.LogicLayer
 
                             JToken symbolObject = JToken.Parse(dataset);
                             //looking for matching symbols
+                            try
+                            {
+                                symbolObject.First.First["2. Symbol"].ToString();
+                            }
+                            catch ( Exception e)
+                            {
+                                Console.WriteLine("BROKEN HERE");
+                                Console.WriteLine(dataset);
+                            }
                             if (symbolObject.First.First["2. Symbol"].ToString() == symbol)
                             {
                                 //grabbed correct matching symbol
@@ -328,7 +339,7 @@ namespace algo_02.LogicLayer
                         {
 
                             Console.WriteLine("(UpdateTickers)there was a problem " + e.Message);
-                            Console.ReadKey();
+
                         }
                     }
 

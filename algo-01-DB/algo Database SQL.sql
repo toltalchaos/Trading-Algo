@@ -89,6 +89,7 @@ CREATE TABLE WALLET_HISTORY
     PortfolioLineNumber INTEGER CONSTRAINT FK_Walhist_Portfolio FOREIGN KEY(PortfolioLineNumber) REFERENCES Portfolio(PortfolioLineNumber) NOT NULL ,
     Balance  Decimal(15,2), 
     Symbol VARCHAR(5) CONSTRAINT FK_transact_Symbol FOREIGN KEY(Symbol) REFERENCES Stock_Item(Symbol),
+    Shares INTEGER CONSTRAINT CK_transact_numShares check(Shares != 0),
     Amount DECIMAL(10,4) CONSTRAINT CK_trans_zero CHECK(Amount != 0),
     Direction VARCHAR(4) CONSTRAINT CK_transact_BuySell CHECK(Direction IN ('BUY', 'SELL')) 
 )
@@ -179,9 +180,9 @@ BEGIN
 END
     IF @@ROWCOUNT > 0 
     BEGIN
-        INSERT INTO WALLET_HISTORY(PortfolioLineNumber, Balance, Symbol, Amount, Direction)
+        INSERT INTO WALLET_HISTORY(PortfolioLineNumber, Balance, Symbol, Amount, Direction, Shares)
         SELECT I.PortfolioLineNumber, (select CurrentBalance + I.SalePrice from Wallet),
-                I.Symbol, I.SalePrice, @upd_Direction
+                I.Symbol, I.SalePrice, @upd_Direction, ((select [Close] from Stock_Item where Symbol = I.Symbol) / I.SalePrice)
         FROM inserted I
 
         

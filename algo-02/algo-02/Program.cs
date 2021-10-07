@@ -85,7 +85,8 @@ namespace algo_02
             //exit trading
 
             //full audit report to CSV? - DB object 
-
+            Reporter newReport = new Reporter(startupAmount, walletNumber);
+            newReport.CreateAuditTrail("somefilepath");
             //display gains or losses (chart? - csv?)
 
             //prompt for continue with data - start over (without killing DB?) - print and exit
@@ -200,13 +201,29 @@ namespace algo_02
                     foreach (var symbol in symbolList)
                     {
                         string symbolResponse = marketInterface.History_QueryMarket_Symbol(symbol);
-                        historyData.Add(symbolResponse);
+                        try
+                        {
+                            if (symbolResponse.Contains("Invalid API call."))
+                            {
+                                throw new Exception($"The symbol api doesnt like us right now");
+                            }
+                            else if (symbolResponse.Contains("{\n    \"Note\": \"Thank you for using Alpha Vantage! Our standard API call frequency is 5 calls per minute and 500 calls per day. Please visit https://www.alphavantage.co/premium/ if you would like to target a higher API call frequency.\"\n}"))
+                            {
+                                throw new Exception(symbolResponse);
+                            }
+                            else { historyData.Add(symbolResponse); }
+                        }
+                        catch (Exception e)
+                        {
+
+                            Console.WriteLine("there was an error updating ---> " + e.Message);
+                        }      
+                       
                     }
                     exitbool = true;
                 }
                 catch (Exception e)
                 {
-
                     Console.WriteLine("there was an error updating ---> " + e.Message);
                 }
                 //may need thread sleep
