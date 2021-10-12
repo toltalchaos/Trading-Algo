@@ -404,6 +404,19 @@ namespace algo_02.LogicLayer
             }
             
         }
+        public void SellOffAllShares(List<string> symbolsList, int walletNumber)
+        {
+            Wallet wallet;
+            using(var context = new AlgoDBContext())
+            {
+                wallet = (from x in context.Wallets where x.WalletNumber == walletNumber select x).First();
+            }
+
+            foreach (var symbol in symbolsList)
+            {
+                SellStock(100m, symbol, wallet);
+            }
+        }
 
         private void BuyStock(decimal percentOfWallet, string symbol, Wallet wallet)
         {
@@ -497,10 +510,11 @@ namespace algo_02.LogicLayer
 
                         Console.WriteLine("debug here" + numberOfShares + "should be a valid int (existing)");
 
-                        if (numberOfShares > portfolioItem.AmountOwned)
+                        if (numberOfShares >= portfolioItem.AmountOwned)
                         {
                             portfolioItem.SalePrice = portfolioItem.AmountOwned * symbolData.Close;
                             portfolioItem.AmountOwned = 0;
+                            context.Entry(portfolioItem).State = System.Data.Entity.EntityState.Modified;
                         }
                         else
                         {
@@ -516,7 +530,7 @@ namespace algo_02.LogicLayer
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine("error -  may be insufficent funds" + e.Message + e.InnerException);
+                        Console.WriteLine("error - " + e.Message + e.InnerException);
                     }
 
                 }

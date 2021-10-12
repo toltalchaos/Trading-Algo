@@ -114,20 +114,20 @@ GO
 
 -- create triggers to maintain DB
     --REMOVE ROWS FROM PORTFOLIO WHERE AMOUNT OWNED = 0 
-IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[Portfolio_Update_Removezerown]'))
-DROP TRIGGER Portfolio_Update_Removezerown
-GO
+-- IF EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[dbo].[Portfolio_Update_Removezerown]'))
+-- DROP TRIGGER Portfolio_Update_Removezerown
+-- GO
 
-CREATE TRIGGER Portfolio_Update_Removezerown
-ON Portfolio
-FOR Update 
-AS
-    IF EXISTS(SELECT Symbol from Portfolio WHERE AmountOwned = 0)
-        DELETE from Portfolio 
-        where AmountOwned = 0
+-- CREATE TRIGGER Portfolio_Update_Removezerown
+-- ON Portfolio
+-- FOR Update 
+-- AS
+--     IF EXISTS(SELECT Symbol from Portfolio WHERE AmountOwned = 0)
+--         DELETE from Portfolio 
+--         where AmountOwned = 0
     
-RETURN
-GO
+-- RETURN
+-- GO
 
 -- trigger to add to audit logs
 --market data trigger
@@ -182,7 +182,7 @@ END
     BEGIN
         INSERT INTO WALLET_HISTORY(PortfolioLineNumber, Balance, Symbol, Amount, Direction, Shares)
         SELECT I.PortfolioLineNumber, (select CurrentBalance + I.SalePrice from Wallet),
-                I.Symbol, I.SalePrice, @upd_Direction, ((select [Close] from Stock_Item where Symbol = I.Symbol) / I.SalePrice)
+                I.Symbol, I.SalePrice, @upd_Direction, ((SalePrice /(select [Close] from Stock_Item where Symbol = I.Symbol)) * -1)
         FROM inserted I
 
         

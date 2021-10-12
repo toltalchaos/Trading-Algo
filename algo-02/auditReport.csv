@@ -1,0 +1,4 @@
+Starting amount =,500, , Ending amount =,500.00
+Transaction Number, Direction, Symbol, Amount of Shares, Amount in Dollars, Current Balance
+6,SELL,AMC,-3,111.9900,500.00
+5,BUY,AMC,3,-111.9900,388.01

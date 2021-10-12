@@ -16,6 +16,8 @@ using System.Data.SqlClient;
 using algo_02.LogicLayer;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Diagnostics;
+using System.IO;
 
 namespace algo_02
 {
@@ -39,7 +41,7 @@ namespace algo_02
 
             List<string> symbolhistory = new List<string>();
             List<string> symbols = new List<string>();
-            LoadSymbols(out symbolhistory, out symbols);
+            LoadSymbols(out symbolhistory, ref symbols);
 
             //log data to db
             modelInterface.AddSymbolToWatchList(symbols);
@@ -47,49 +49,62 @@ namespace algo_02
 
             //prompt to begin algo trading
             bool killCommand = false;
-
             do
             {
-                //log data movement
-                modelInterface.UpdateTickers(symbolhistory);
-                //analyze stock history and current position -> decision
-                foreach (var symbol in symbols)
+                do
                 {
+                    //log data movement
+                    modelInterface.UpdateTickers(symbolhistory);
+                    //analyze stock history and current position -> decision
+                    foreach (var symbol in symbols)
+                    {
                         DecisionMaker decision = new DecisionMaker();
                         decision.EvaluateSymbol(symbol);
                         //create decision range on buy or sell from index outputs    
                         modelInterface.StockTransaction(symbol, walletNumber, decision.GetBuySellIndex());
-                }
-
-                try
-                {
-                    Console.WriteLine("Please enter \"kill\" within the next 5 seconds. \n to terminate program");
-                    string input = KillCommandReader.ReadLine(5000);
-                    if (input.ToLower() == "kill")
-                    {
-                        killCommand = true;
                     }
-                }
-                catch (TimeoutException)
-                {
-                    Console.WriteLine("timeout finished, refreshing and re-evaluating stocks");
-                }
 
-                UpdateSymbols(symbols, out symbolhistory);
-                modelInterface.UpdateTickers(symbolhistory);
+                    try
+                    {
+                        Console.WriteLine("Please enter \"kill\" within the next 20 minutes. \n to terminate program");
+                        string input = KillCommandReader.ReadLine(1200000);
+                        if (input.ToLower() == "kill")
+                        {
+                            killCommand = true;
+                        }
+                    }
+                    catch (TimeoutException)
+                    {
+                        Console.WriteLine("timeout finished, refreshing and re-evaluating stocks");
+                    }
+
+                    UpdateSymbols(symbols, ref symbolhistory);
+                    modelInterface.UpdateTickers(symbolhistory);
 
 
 
 
-            } while (!killCommand);
-            //exit trading
+                } while (!killCommand);
+                //exit trading
+               
 
-            //full audit report to CSV? - DB object 
+                //prompt for continue with data - start over (without killing DB?) - print and exit
+                killCommand = ReturnToProgram();
+            } while (killCommand);
+            //after program terminated sell all owned shares at current market value based on Y/N choice
+
+            //sell all owned shares
+            modelInterface.SellOffAllShares(symbols, walletNumber);
+
+            //display current balance on screen then hang screen
+
+            //produce new audit trail
             Reporter newReport = new Reporter(startupAmount, walletNumber);
-            newReport.CreateAuditTrail("somefilepath");
-            //display gains or losses (chart? - csv?)
+            newReport.CreateAuditTrail("../../../auditReport.csv");
 
-            //prompt for continue with data - start over (without killing DB?) - print and exit
+            //display transactions in csv file
+            Process.Start(Path.GetFullPath("../../../auditReport.csv"));
+
 
         }
 
@@ -117,7 +132,7 @@ namespace algo_02
 
         }
 
-        static void LoadSymbols(out List<string> symbolhistory, out List<string> symbols)
+        static void LoadSymbols(out List<string> symbolhistory, ref List<string> symbols)
         {
             //create a List<T> where T is a list of Stock Object Models 
             //loop through recieving stock symbols (validate existance) -> creating List<string>
@@ -138,23 +153,33 @@ namespace algo_02
                 try
                 {
                     string symbolInput = Console.ReadLine().Trim(' ').ToUpper();
-                    string symbolResponse = marketInterface.History_QueryMarket_Symbol_Full(symbolInput);
-                    //if query string returns null - throw new
-                    if (symbolResponse.Contains("Invalid API call."))
+                    if (symbols.Contains(symbolInput))
                     {
-                        throw new Exception($"The symbol {symbolInput} was not found, hit \"N\" to try another");
-                    }
-                    else if (symbolResponse.Contains("{\n    \"Note\": \"Thank you for using Alpha Vantage! Our standard API call frequency is 5 calls per minute and 500 calls per day. Please visit https://www.alphavantage.co/premium/ if you would like to target a higher API call frequency.\"\n}"))
-                    {
-                        throw new Exception(symbolResponse);
+
+                        Console.WriteLine("please try again that symbol already exists.");
+
                     }
                     else
                     {
-                        Console.WriteLine($"The symbol{symbolInput} was found");
-                        Console.WriteLine(symbolResponse);
-                        historyData.Add(symbolResponse);
-                        symbolList.Add(symbolInput);
+                        string symbolResponse = marketInterface.History_QueryMarket_Symbol_Full(symbolInput);
+                        //if query string returns null - throw new
+                        if (symbolResponse.Contains("Invalid API call."))
+                        {
+                            throw new Exception($"The symbol {symbolInput} was not found, hit \"N\" to try another");
+                        }
+                        else if (symbolResponse.Contains("{\n    \"Note\": \"Thank you for using Alpha Vantage! Our standard API call frequency is 5 calls per minute and 500 calls per day. Please visit https://www.alphavantage.co/premium/ if you would like to target a higher API call frequency.\"\n}"))
+                        {
+                            throw new Exception(symbolResponse);
+                        }
+                        else
+                        {
+                            Console.WriteLine($"The symbol{symbolInput} was found");
+                            Console.WriteLine(symbolResponse);
+                            historyData.Add(symbolResponse);
+                            symbols.Add(symbolInput);
+                        }
                     }
+                    
 
 
                 }
@@ -172,6 +197,10 @@ namespace algo_02
                     {
                         exitBool = true;
                     }
+                    else if (answer.KeyChar == 'n')
+                    {
+
+                    }
                     else
                     {
                         throw new Exception("\r\nplease press the \'Y\' key or the \'N\' key");
@@ -185,11 +214,10 @@ namespace algo_02
             } while (!exitBool);
 
             symbolhistory = historyData;
-            symbols = symbolList;
 
         }
 
-        static void UpdateSymbols(List<string> symbolList ,out List<string> symbolhistory)
+        static void UpdateSymbols(List<string> symbolList ,ref List<string> symbolhistory)
         {
             bool exitbool = false;
             MarketInterface marketInterface = new MarketInterface();
@@ -201,6 +229,7 @@ namespace algo_02
                     foreach (var symbol in symbolList)
                     {
                         string symbolResponse = marketInterface.History_QueryMarket_Symbol(symbol);
+                        
                         try
                         {
                             if (symbolResponse.Contains("Invalid API call."))
@@ -220,6 +249,7 @@ namespace algo_02
                         }      
                        
                     }
+                    symbolhistory = historyData;
                     exitbool = true;
                 }
                 catch (Exception e)
@@ -229,9 +259,27 @@ namespace algo_02
                 //may need thread sleep
             } while (!exitbool);
 
-            symbolhistory = historyData;
+            
         }
+        static bool ReturnToProgram()
+        {
+            Console.WriteLine("would you like to return to trading? Y/N");
+            ConsoleKeyInfo answer = Console.ReadKey();
+            if (answer.KeyChar == 'y')
+            {
+                return true;
+            }
+            else if (answer.KeyChar == 'n')
+            {
+                return false;
+            }
+            else
+            {
+                throw new Exception("\r\nplease press the \'Y\' key or the \'N\' key");
+            }
+        }
+    }
         
 
     }
-}
+
