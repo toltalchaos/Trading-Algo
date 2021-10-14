@@ -527,6 +527,7 @@ namespace algo_02.LogicLayer
                     try
                     {
                         context.SaveChanges();
+                        
                     }
                     catch (Exception e)
                     {
